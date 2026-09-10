@@ -95,9 +95,9 @@ Gap vs the #123 plan:
 
 | # | Plan item | Status |
 |---|---|---|
-| 1 | Short plan item | ❌ Not started |
-| 2 | Short plan item | ⚠️ Partial — concrete evidence and what is missing |
-| 3 | Short plan item | ✅ Done — implementation/test/docs evidence |
+| 1 | Short plan item | Not started |
+| 2 | Short plan item | Partial — concrete evidence and what is missing |
+| 3 | Short plan item | Done — implementation/test/docs evidence |
 ```
 
 For acceptance criteria, use:
@@ -107,18 +107,18 @@ Cross-checking each acceptance criterion against the current work:
 
 | #123 Acceptance criterion | Status |
 |---|---|
-| User-visible criterion | ✅ Concrete code path + test/doc evidence |
-| User-visible criterion | ⚠️ Partial — shipped part; missing part |
-| User-visible criterion | ❌ Missing — what does not exist yet |
+| User-visible criterion | Met — concrete code path + test/doc evidence |
+| User-visible criterion | Partial — shipped part; missing part |
+| User-visible criterion | Missing — what does not exist yet |
 ```
 
 For verification, use a short list after the table:
 
 ```markdown
 Verification targets:
-- ✅ Focused tests passed
-- ⚠️ Manual QA not run — needs interactive session
-- ❌ Integration test failing — failure reason
+- Passed: focused tests
+- Not run: manual QA — needs interactive session
+- Failing: integration test — failure reason
 ```
 
 End with one compact recommendation paragraph:
@@ -181,13 +181,15 @@ Execution options:
 
 ## Status Semantics
 
-Use status symbols consistently when they improve scanning, especially in section lead-ins or verification bullets. In table cells, plain labels like `Complete`, `Partial`, `Blocked`, and `Pending` are often easier to read when the table is dense.
+Use a fixed vocabulary of plain-text status labels. No emoji status symbols — they render inconsistently across terminals, diffs, and pasted output, and the column's alignment already does the scanning work. The labels:
 
-- ✅ Complete, verified, or evidence-backed.
-- ⚠️ Partial, risky, uncertain, or needs follow-up.
-- ❌ Missing, not started, failed, or contradicted by evidence.
-- ⏳ Pending or intentionally deferred.
-- 🚫 Blocked by an external dependency or unavailable environment.
+- `Complete` — done, verified, or evidence-backed.
+- `Partial` — some parts landed, uncertain, or needs follow-up; name what's missing.
+- `Missing` — not started, failed, or contradicted by evidence.
+- `Pending` — intentionally deferred or awaiting a run.
+- `Blocked` — an external dependency or unavailable environment is in the way.
+
+In verification bullets, prefer plain verbs over labels where they read better: `Passed: focused tests`, `Not run: manual QA`, `Failing: integration test`.
 
 Each status cell must include evidence, not just a label. Name files, commands, tests, commits, docs, UI surfaces, or known missing pieces when available. Use `code` formatting for identifiers, commands, branch names, fields, functions, and exact status values.
 
@@ -198,6 +200,8 @@ Keep the table compact and factual. Do not pad rows with generic prose.
 Lead with the answer. If the user asks "are all issues done?", do not start with methodology; state `Yes`, `No`, or `Partially`, then give the table evidence.
 
 Prefer 2-4 columns. If a fifth column feels necessary, consider moving low-value detail into a short paragraph or bullet list below the table.
+
+Cells stay single-line — no pipes or line breaks inside a cell, both of which break the table in Markdown renderers. Overflow goes into the supporting blocks below the table.
 
 Use concise section labels rather than long explanatory headings: `What changed`, `Suggestions`, `Still open`, `Verification`, `Net`.
 
@@ -219,4 +223,6 @@ Verified: core 442, api 366, web 393; typecheck + lint clean.
 Net: NOW + NEXT reliability work is done; remaining buildable work is `#343` Parts 2-3 and the later feature epics.
 ```
 
-Use normal prose when the user asks a simple question that does not involve plans, acceptance criteria, status, verification, or work summaries.
+Use normal prose when the user asks a simple question that does not involve plans, acceptance criteria, status, verification, or work summaries. Under ~3 rows a sentence or two beats a table — don't wrap a one-fact answer in furniture.
+
+When the readout reports the result of a run or review, end with a verdict line using the shared vocabulary — `PASS`, `ISSUES`, or `BLOCKED` — so a reader learns one set of verdicts across the repo's skills.
