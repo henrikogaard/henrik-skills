@@ -63,7 +63,9 @@ Fire every **ready** node (no unmet dependencies) in parallel in the background 
 The writer–reviewer loop is where convergence is won:
 
 - Where a different executor or model family is available, run the reviewer on it — a reviewer sharing the writer's model shares its blind spots, and the loop loses the independence it exists for.
+- The reviewer's brief carries the rubric, the draft, and the source material — not the writer's self-assessment or your interim verdict. It picks its own methods and reports before seeing anyone's conclusions.
 - The reviewer's critique names **specific, actionable defects** against the rubric, and always ends in a verdict: `revise` (with the defects) or `ship` (**citing the rubric point by point**). "Looks good mostly" is not a verdict.
+- A `ship` names its coverage — which sections and rubric points were actually inspected on this draft; sampled coverage is a `revise`. And a verdict binds to the version it inspected: a revised draft re-opens clearance, so re-verify what changed instead of carrying last round's approval forward.
 - A `ship` that arrives while revision rounds remain in the budget gets a referee sanity-check against the rubric — reviewers skew lenient, and an early ship ends a run below the bar its depth paid for. On a quick run the budget is one round, so a round-1 `ship` stands.
 - The writer revises **against the critique only** — not a fresh rewrite; round 3 should be recognizably round 2, repaired.
 - **You referee.** If writer and reviewer deadlock (round N's critique contradicts round N−1's), rule as orchestrator and move on; re-litigating their argument yourself is the failure mode this loop exists to prevent.

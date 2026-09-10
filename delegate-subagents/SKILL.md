@@ -86,6 +86,12 @@ Kill stalled delegates by deadline: note each start time and stop the harness ba
 
 **Division mode** — verify before you integrate: the promised artifact exists, the diff applies cleanly, and a diff review flags injection-shaped changes — new dependencies, credential access, CI edits — before anything merges; a quick read is not a security review. Merge the branches sequentially, resolving conflicts against the brief; escalate conflicts the brief can't settle to the user. Integrate the passing slices, report the failures honestly (which agent, which slice, what the err log said), and offer re-running a failed slice on another agent rather than quietly doing it yourself.
 
+Verification plays by three rules in every mode — whether the reviewer is a delegate or you:
+
+- **Blind review**: a reviewer's brief carries the ask, the artifact, and the rubric — not the producer's self-assessment or your interim verdict. It chooses its methods and reports before seeing anyone's conclusions; a reviewer who reads the verdict first is a second signature, not a review.
+- **Coverage, not sampling**: before accepting "checked" or "done", enumerate the units the claim covers — every brief question answered, every promised file inspected — and count them. A clean sample is still a sample.
+- **No laundered evidence**: a result applies to the version it ran on. Evidence reused on a new version is recorded as reuse, with its re-validation — never reported as a fresh check.
+
 Any mode, before the report: audit the record against what actually ran — every manifest row's status matches a real `out-`/`err-` file, dropouts and reassignments are recorded, claimed outputs exist. Fix the log, not the story. Then end with the one-paragraph bottom line and pointers into the run directory.
 
 ## Failure playbook
