@@ -1,0 +1,49 @@
+{
+  "skill_name": "requirement-mapping",
+  "evals": [
+    {
+      "id": 1,
+      "name": "messy-stakeholder-ask",
+      "prompt": "Our gym owner sent this in Slack, can you work out what we're actually building before anyone designs anything?\n\n\"ok so members need to book classes on their phone, and cancel up to 2h before or they get charged. coaches should see who's coming. we have 3 sites now, maybe 5 next year. it HAS to be live before the january rush (dec 1). we use stripe already for memberships so payments should go through that. maybe some analytics later on attendance? oh and it should be fast, people complain the current thing is slow\"",
+      "expected_output": "A requirements map with numbered sources and requirements, acceptance criteria on Must/Should FRs, traceability both ways, open questions for the vague parts.",
+      "files": [],
+      "expectations": [
+        "The Slack message is recorded as a numbered source (S1) with a location",
+        "Booking, cancelling and the coach attendee view are separate FR rows (atomic)",
+        "Every Must and Should FR row has an acceptance criterion",
+        "'it should be fast' becomes a numeric NFR or a Q-n, not an adverb-only requirement",
+        "'maybe some analytics later' becomes a Q-n asking for a decision, not a silent out-of-scope line",
+        "The Dec 1 deadline and the use of Stripe are CON-n rows citing the source",
+        "A Traceability table gives every source statement exactly one disposition",
+        "Missing NFR topics (availability, retention, who can see what) are recorded as 'no stated NFR' or as Q-n rows",
+        "The response leads with or highlights the open questions for the user"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "small-ask-stays-small",
+      "prompt": "Before I build it: we want a dark mode toggle on the settings page that remembers the choice. Map the requirements quickly.",
+      "expected_output": "A short map (about a page or less) or inline requirements, not the full ceremony.",
+      "files": [],
+      "expectations": [
+        "The output says the ask is small and keeps the map short or inline",
+        "The whole answer is under about 60 lines",
+        "Persisting the choice is captured as its own requirement with an acceptance criterion",
+        "No Dependencies or Conflicts sections are padded out with empty or invented rows"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "conflicting-sources",
+      "prompt": "Two sources for the export feature. Map them.\n\nS1 (product, issue #41): \"Admins export all customer records to CSV, including email and phone, any time they want.\"\nS2 (legal, email 2026-09-30): \"No bulk export of personal data without a logged reason and manager approval.\"",
+      "expected_output": "A map with both sources, the contradiction surfaced in a Conflicts table with both sides cited, and a Q-n parking it.",
+      "files": [],
+      "expectations": [
+        "Both statements are recorded as sources S1 and S2 with their locations",
+        "A Conflicts table names the contradiction and cites both sources",
+        "The conflict is parked as a Q-n rather than resolved silently in one side's favour",
+        "A proposed resolution is offered for the user to accept or reject"
+      ]
+    }
+  ]
+}

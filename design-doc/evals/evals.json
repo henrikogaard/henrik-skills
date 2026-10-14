@@ -1,0 +1,54 @@
+{
+  "skill_name": "design-doc",
+  "evals": [
+    {
+      "id": 1,
+      "name": "new-system-conceptual-logical",
+      "prompt": "Here's the requirements map for our class booking system (evals/files/booking-requirements-map.md). Design the architecture: conceptual and logical, no detailed spec yet. Write it to docs/design/booking-design.md.",
+      "expected_output": "A conceptual + logical design doc traced to the map's IDs, with a coverage table that closes.",
+      "files": ["evals/files/booking-requirements-map.md"],
+      "expectations": [
+        "The doc states its depth (conceptual + logical) and why near the top",
+        "Q-1 (late-cancel fee scope) is handled as a blocking question or a stated working assumption",
+        "The context map marks at least one trust boundary and names threats at it",
+        "Components are named after the domain, not technology products",
+        "The logical level names no products other than those forced by a CON-n (Stripe, PostgreSQL)",
+        "A data ownership table gives each datum exactly one owner",
+        "Scenario walkthroughs name the contract at each hop and together cover FR-1 to FR-4",
+        "NFR-1 has a mechanism with a line of arithmetic or capacity reasoning",
+        "NFR-3 (never overbooked) has a concrete mechanism, such as a transactional or conditional update",
+        "A coverage table lists every FR and NFR with a component, and every component lists requirement IDs"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "small-change-stays-conceptual",
+      "prompt": "In our existing booking system (see evals/files/booking-requirements-map.md), we just want to add FR-5, the waitlist. The rest of the architecture is settled. Give me the design for that.",
+      "expected_output": "A short design that picks conceptual-only (or a compressed logical pass) and says what it compressed and why.",
+      "files": ["evals/files/booking-requirements-map.md"],
+      "expectations": [
+        "The doc states a reduced depth and the reason (a change inside a settled architecture)",
+        "It says which sections it compressed or skipped instead of padding every template heading",
+        "The waitlist design cites FR-5 and addresses how it interacts with NFR-3 (no overbooking)",
+        "The answer is clearly shorter than a full conceptual + logical doc"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "detailed-spec-for-implementers",
+      "prompt": "We're handing the booking system (evals/files/booking-requirements-map.md) to a contractor team who weren't in any of our discussions. Write the full design, all the way to an implementation-ready spec for the booking component.",
+      "expected_output": "A doc at all three levels, with the booking component specified to mock-ready detail and every acceptance criterion mapped to a test.",
+      "files": ["evals/files/booking-requirements-map.md"],
+      "expectations": [
+        "The doc states its depth as all three levels because the readers are outside implementers",
+        "The booking interface has at least one literal request and response example",
+        "Error cases for booking are enumerated (for example class full, already booked)",
+        "The physical data model justifies at least one index by a query or NFR",
+        "Failure modes for Stripe cover timeout, retry with idempotency, and Stripe being down",
+        "A test strategy table maps each acceptance criterion of FR-1 to FR-4 to a named test with a type",
+        "NFR-1 gets a load test and a latency budget split across hops",
+        "Products are pinned only at the detailed level, each pivotal one with alternatives"
+      ]
+    }
+  ]
+}

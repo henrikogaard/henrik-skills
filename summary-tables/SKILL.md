@@ -1,228 +1,62 @@
 ---
 name: summary-tables
-description: Use when the user needs a summary, status update, comparison, acceptance-criteria check, implementation close-out, gap analysis, verification matrix, PR/issue readiness report, review suggestions, fix summary, open-issue report, or decision-ready readout; triggers include "summary table", "plan summary", "acceptance criteria", "gap vs plan", "what shipped", "status", "verification", "checklist", "issue", "PR summary", "progress update", "readout", or "comparison". Defer to a more specialized skill when one clearly fits better.
+description: Format a status or close-out readout as one compact, evidence-backed Markdown table — work done against a plan, issue or acceptance criteria, review findings and fixes, verification results, PR or issue readiness, or an option comparison. Use when reporting what shipped, what is left, a gap against a plan, or whether criteria are met. Not for a one-fact answer or for ordinary prose questions.
 ---
 
-# Summary Tables
+# Summary tables
 
-Use concise Markdown tables to make planning, reporting, and presentation of decision-relevant information scannable. Prefer this format when summarizing work against a plan, issue, PR, acceptance criteria, findings list, commit/push result, verification checklist, or any other status-oriented readout.
+A readout answers one question fast and keeps the evidence attached. Use a table when there are about three or more items with a status. For one or two facts, write a sentence.
 
-## Readout Shape
+## Shape
 
-For status and close-out summaries, use the Claude-style readout shape:
+1. **Bottom line first**, in one sentence. If the user asked yes/no, start with `Yes`, `No` or `Partly`. Include branch, commit or PR state and anything still unverified.
+2. **A short label** naming what the table answers: `What changed`, `Still open`, `Verification`.
+3. **One table** with 2–4 columns named for this question (see below).
+4. **A closing line**: `Verified: …` (what was checked, on which commit) or `Net: …` (what is left and the next step). Add a verdict, `PASS`, `ISSUES` or `BLOCKED`, when the readout reports a run or a review.
 
-1. Start with the bottom line in one sentence: what is done, what remains, branch/commit/PR state, and whether verification is still pending.
-2. Add a short section label that says what the table answers, such as `What changed`, `Suggestions`, `Are all started issues implemented?`, or `Still open`.
-3. Use one compact table with columns tailored to the question. Avoid one-size-fits-all columns.
-4. Close with a short verification/net line or a tiny supporting section for details that do not fit cleanly in the table.
+```markdown
+No — two of three criteria are met; the export criterion is missing.
 
-Good table columns are concrete nouns from the task:
+#123 acceptance criteria
 
-| Use case | Prefer columns |
+| Criterion | Status |
 |---|---|
-| Review fixes | `#`, `Suggestion`, `Fix` |
-| Fresh review suggestions | `#`, `File`, `Suggestion`, `Category` |
-| Issue implementation status | `Issue`, `Implementation`, `On` |
-| Open issue report | `Issue`, `Status` |
-| Plan progress | `#`, `Plan item`, `Status` |
-| Acceptance criteria | `Acceptance criterion`, `Status` |
-| Verification | `Target`, `Result`, `Evidence` |
-| Risk/comparison | `Option`, `Tradeoff`, `Recommendation` |
+| User can import a CSV | Complete — `importCsv()` + `import.test.ts` (12 passed) |
+| Errors show the failing row | Complete — `ImportErrors.tsx`, checked in browser |
+| User can export to CSV | Missing — no export route yet |
 
-When the user asks a direct yes/no status question, answer directly before the table:
-
-```markdown
-Yes — every started item is implemented. One issue comment was stale and is now corrected.
-
-Are all started issues implemented?
-
-| Issue | Implementation | On |
-|---|---|---|
-| `#340` | Complete — cookie-only session handling and grace value landed | `development` |
-| `#342` | Complete — all three review parts fixed | `development` |
-
-Net: no issue is half-done; remaining work is closeout/merge bookkeeping.
+Verified: unit tests passed on `a1b2c3d`; e2e not run (no staging access).
 ```
 
-## Table Patterns
+## Pick columns for the question
 
-For review suggestions and fixes, prefer an itemized table:
-
-```markdown
-What changed
-
-| # | Suggestion | Fix |
-|---|---|---|
-| 1 | Refresh trace lingers in `localStorage` | Added `clearRefreshTrace()` on explicit sign-out; preserved auth-failure traces for diagnostics. Tested. |
-| 2 | Duplicated retry helper | Reused core retry timing helper instead of a local copy. |
-
-Verified: focused tests passed; CI still pending.
-```
-
-For fresh suggestions, keep the finding, location, and category separate:
-
-```markdown
-Suggestions
-
-| # | File | Suggestion | Category |
-|---|---|---|---|
-| 1 | `refreshTrace.ts` | Clear the debug trace on sign-out to avoid stale shared-machine breadcrumbs. | Maintainability/Privacy |
-| 2 | `authRetry.ts` | The helper overlaps with core retry code; consider reusing the shared helper. | Maintainability |
-```
-
-For issue status, group tables by real state instead of mixing everything:
-
-```markdown
-Implemented on `development`
-
-| Issue | Status |
+| Readout | Columns |
 |---|---|
-| `#342` Retry-after and circuit breaker | Fully done — all review parts fixed |
-| `#343` Observability surfacing | Partial — Part 1 done; Parts 2-3 remain |
+| Review fixes | `#`, `Finding`, `Fix` |
+| New review findings | `#`, `File`, `Finding`, `Category` |
+| Plan progress or gap | `#`, `Plan item`, `Status` |
+| Acceptance criteria | `Criterion`, `Status` |
+| Issue status | `Issue`, `Status` |
+| Verification | `Check`, `Result`, `Evidence` |
+| Comparison | `Option`, `Tradeoff`, `Recommendation` |
 
-Not started
-- `#331` Local-first sync
-- `#329` Automation engine
+## Status words
 
-Blocked / operational
-- `#284` OAuth provider setup — waiting on production credentials
-```
+Use exactly these, as plain text with no emoji, and follow each with evidence:
 
-For gap/progress against a plan, use:
-
-```markdown
-Gap vs the #123 plan:
-
-| # | Plan item | Status |
-|---|---|---|
-| 1 | Short plan item | Not started |
-| 2 | Short plan item | Partial — concrete evidence and what is missing |
-| 3 | Short plan item | Done — implementation/test/docs evidence |
-```
-
-For acceptance criteria, use:
-
-```markdown
-Cross-checking each acceptance criterion against the current work:
-
-| #123 Acceptance criterion | Status |
-|---|---|
-| User-visible criterion | Met — concrete code path + test/doc evidence |
-| User-visible criterion | Partial — shipped part; missing part |
-| User-visible criterion | Missing — what does not exist yet |
-```
-
-For verification, use a short list after the table:
-
-```markdown
-Verification targets:
-- Passed: focused tests
-- Not run: manual QA — needs interactive session
-- Failing: integration test — failure reason
-```
-
-End with one compact recommendation paragraph:
-
-```markdown
-This is a meaningful chunk of work because [...]. Next step: [...].
-```
-
-## Grouping Rules
-
-Group long status readouts by actual state before creating a table:
-
-- `Done / implemented`: shipped or fixed, ideally with branch/commit/issue evidence.
-- `Partial`: some parts landed; name the remaining pieces.
-- `Open / not started`: no implementation yet; name priority or reason if known.
-- `Blocked`: external credential, environment, review, CI, or dependency is missing.
-- `Operational / bookkeeping`: merge, close, comment, label, board, deploy, or CI follow-up.
-
-Use separate headings or short lead-in lines for groups. Do not bury `Partial` or `Blocked` rows inside a long table of completed work.
-
-## Preserve Valuable Detail
-
-Tables organize the summary; they must not erase useful information. Before finalizing, scan the conversation and tool results for unique, decision-relevant facts and keep them either in the table evidence cells or in short supporting sections below the table.
-
-Preserve these details when present:
-
-- Changed files, components, migrations, docs, generated artifacts, and UI routes.
-- User-visible behavior that now works.
-- Verification commands, test counts, browser/manual QA targets, and skipped checks with reasons.
-- Commit SHA, branch, push target, PR/issue numbers, issue state, labels, assignee, project/status, and posted comments.
-- Findings with severity, file names, line numbers, exploit/impact notes, and must-fix recommendations.
-- Follow-up plans, saved plan filenames, worklog breadcrumbs, and execution options.
-- Excluded or unrelated local leftovers so the user knows what was intentionally not committed or handled.
-
-When a status cell would become crowded, keep the row compact and add one of these blocks after the table:
-
-```markdown
-Main pieces:
-- `path/File.ext` - what changed
-
-What's working:
-- User-visible behavior or route that was verified
-
-Validation:
-- `command` passed
-- focused tests: `45 passed`
-
-Commit / issue:
-- commit `abc1234` on `feature/name`
-- pushed to `origin/feature/name`
-- issue `#123` moved to `In review`
-
-Left out:
-- unrelated local file or artifact not included
-
-Execution options:
-1. Option name: concise tradeoff
-2. Option name: concise tradeoff
-```
-
-## Status Semantics
-
-Use a fixed vocabulary of plain-text status labels. No emoji status symbols — they render inconsistently across terminals, diffs, and pasted output, and the column's alignment already does the scanning work. The labels:
-
-- `Complete` — done, verified, or evidence-backed.
-- `Partial` — some parts landed, uncertain, or needs follow-up; name what's missing.
+- `Complete` — done, with evidence.
+- `Partial` — some parts landed; name what is missing.
 - `Missing` — not started, failed, or contradicted by evidence.
-- `Pending` — intentionally deferred or awaiting a run.
-- `Blocked` — an external dependency or unavailable environment is in the way.
+- `Pending` — deferred on purpose, or awaiting a run.
+- `Blocked` — an outside dependency is in the way; name it.
 
-In verification bullets, prefer plain verbs over labels where they read better: `Passed: focused tests`, `Not run: manual QA`, `Failing: integration test`.
+A label alone is not a status. Name the file, test, command, commit or UI route that proves it. If verification was not run, say so and why; never imply completion from intent.
 
-Each status cell must include evidence, not just a label. Name files, commands, tests, commits, docs, UI surfaces, or known missing pieces when available. Use `code` formatting for identifiers, commands, branch names, fields, functions, and exact status values.
+## Rules
 
-## Writing Rules
-
-Keep the table compact and factual. Do not pad rows with generic prose.
-
-Lead with the answer. If the user asks "are all issues done?", do not start with methodology; state `Yes`, `No`, or `Partially`, then give the table evidence.
-
-Prefer 2-4 columns. If a fifth column feels necessary, consider moving low-value detail into a short paragraph or bullet list below the table.
-
-Cells stay single-line — no pipes or line breaks inside a cell, both of which break the table in Markdown renderers. Overflow goes into the supporting blocks below the table.
-
-Use concise section labels rather than long explanatory headings: `What changed`, `Suggestions`, `Still open`, `Verification`, `Net`.
-
-Do not over-compress. If the original material contains important bullets, preserve each unique actionable fact unless it is duplicate, irrelevant, or pure noise.
-
-Preserve the user's issue/PR/plan numbering when known, such as `#220` or `#221`.
-
-If evidence is unknown or verification was not run, say so directly and include the reason. Do not imply completion from intent.
-
-When producing a plan before implementation, use the same table shape with statuses like `Planned`, `Open`, `Needs decision`, or `Blocked`, then summarize scope and sequencing below it.
-
-For more than about 8-12 rows, group related work into sections or summarize low-risk repeated items so the output remains readable.
-
-End with a `Verified:` or `Net:` line when it helps:
-
-```markdown
-Verified: core 442, api 366, web 393; typecheck + lint clean.
-
-Net: NOW + NEXT reliability work is done; remaining buildable work is `#343` Parts 2-3 and the later feature epics.
-```
-
-Use normal prose when the user asks a simple question that does not involve plans, acceptance criteria, status, verification, or work summaries. Under ~3 rows a sentence or two beats a table — don't wrap a one-fact answer in furniture.
-
-When the readout reports the result of a run or review, end with a verdict line using the shared vocabulary — `PASS`, `ISSUES`, or `BLOCKED` — so a reader learns one set of verdicts across the repo's skills.
+- **Group by state** when the list is long: Complete, Partial, Missing, Blocked, then bookkeeping (merge, close, deploy). Never bury a `Partial` or `Blocked` row among completed ones.
+- **Keep cells on one line.** A pipe or line break inside a cell breaks the table. Put overflow in a short list under the table.
+- **Keep the user's numbering**: issue, PR and plan numbers like `#220`.
+- **Don't drop detail.** Before finishing, scan the conversation for facts the reader would need: changed files, test counts, skipped checks and why, commit SHA, branch, PR or issue state, findings with severity and location, and anything deliberately left out. Each one goes in a cell or in the list below the table.
+- **Past ~10 rows**, split into groups or summarize repeated low-risk rows.
+- Use `code` formatting for paths, commands, branches and identifiers.
