@@ -9,7 +9,12 @@ A requirements list answers questions. A requirements **map** also accounts for 
 
 The map makes gaps **visible**; it does not close them by guessing. An honest open question is a deliverable. A requirement invented to fill a hole is a defect.
 
-**Size the ask first.** One source, a few needs and an obvious definition of done: keep the map to a page, or skip it and carry the requirements inline. If the ask turns out small mid-way, shrink the artifact rather than finishing the ceremony.
+**Size the ask first, and state the size in your reply's first line.**
+
+- **Small** (one source, a handful of needs, an obvious definition of done): start with "Small ask: requirements inline." Then list the FRs with their acceptance criteria and any open questions, in the reply only. Write no map file and no empty sections; leave out Dependencies or Conflicts when there are none. Aim for under ~25 lines.
+- **Full** (anything else): start with "Full map." and follow the steps below.
+
+Running the full process on a small ask is a failure mode, not thoroughness. If a full ask turns out small mid-way, switch to the small form.
 
 ## IDs
 
@@ -38,6 +43,9 @@ The map makes gaps **visible**; it does not close them by guessing. An honest op
 
 ## Done when
 
+Small ask: the first line states the size, every FR has an acceptance criterion, and open questions are listed. The checks below are for full maps.
+
+- [ ] The first line states "Full map."
 - [ ] Every source statement has exactly one disposition in the Traceability table.
 - [ ] Every requirement cites a source quote, or is an `ASM-n` flagged to the user.
 - [ ] Every requirement is atomic and testable, and every Must and Should FR has an acceptance criterion.
@@ -46,6 +54,6 @@ The map makes gaps **visible**; it does not close them by guessing. An honest op
 
 ## Output
 
-One Markdown file following `references/template.md`. Use the repo's docs convention; otherwise `docs/requirements-map.md`, and say where you put it. A typical feature fits in 100–150 lines; past ~200, trim prose and keep rows.
+Full maps only: one Markdown file following `references/template.md`. Use the repo's docs convention; otherwise `docs/requirements-map.md`, and say where you put it. A typical feature fits in 100–150 lines; past ~200, trim prose and keep rows.
 
 Present the map leading with the open questions, since only the user can move them. The map is **settled** when the user has answered the blocking questions or said to proceed on the assumptions. For a system or major feature, the next step is `/design-doc`.

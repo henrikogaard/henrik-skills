@@ -61,7 +61,8 @@ When running by hand:
 1. Copy the skill **without** its `evals/` folder, so the agent under test cannot read the expectations.
 2. Copy the fixtures from `evals/files/` to a neutral folder and point the prompt there.
 3. Run the prompt with the skill and with the baseline (no skill, or the old version), ideally on a small model too: a skill that only works on the strongest model is fragile.
-4. Mark each expectation true or false with evidence.
+4. Tell the agent where to write files and to put its full final message in `answer.md`. If you also want a short chat reply such as "done", say plainly that it is separate from `answer.md`; otherwise some agents write only "done" there.
+5. Mark each expectation true or false with evidence. Grade the whole output folder, not only `answer.md`.
 
 ## License
 

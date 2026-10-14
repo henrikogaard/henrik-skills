@@ -36,7 +36,7 @@ Read the reference for a level before writing it. They hold the step lists and t
 ## The rules that matter most
 
 - **Trace both ways.** Every requirement has a home (capability + component, plus a mechanism for NFRs). Every component is justified by at least one requirement. A component with no requirement is invented scope: cut it or find its requirement.
-- **One owner per datum.** Other components read through the owner's contract. Two owners is a future consistency bug; call it out.
+- **One owner per datum.** Other components read through the owner's contract. Two owners is a future consistency bug; call it out. If the owner is unclear, name a provisional owner and raise a `Q-n` to confirm it; never leave the owner cell blank or "unresolved".
 - **Walkthroughs are the stress test.** Walk the riskiest scenarios hop by hop. A step with no owner, or an invariant that cannot hold mid-flow, means the design has a hole. Fix the design, not the walkthrough.
 - **NFR mechanisms show arithmetic.** "100 rps × 2 KB = 200 KB/s; one replica handles 10×" is a mechanism. "Add a cache" is not.
 - **Record only pivotal decisions.** Pivotal means reversing it touches more than one component's contract or forces a data migration. Give 2–3 alternatives and why the chosen one wins. Where a tradeoff is balanced, ask the user instead of choosing silently.
@@ -48,6 +48,7 @@ Read the reference for a level before writing it. They hold the step lists and t
 - [ ] Depth chosen and stated, with the reason.
 - [ ] Coverage table closes: every requirement has a home or is escalated as a `Q-n`, and every component lists its requirement IDs.
 - [ ] Every `CON-n` is honored or escalated.
+- [ ] Logical depth: every datum in the data ownership table has one named owner (provisional ones carry a `Q-n`).
 - [ ] The scenario walkthroughs together exercise every Must FR and every NFR mechanism.
 - [ ] Every numeric NFR has a mechanism with arithmetic (logical) and, at detailed depth, a budget that sums under the target.
 - [ ] Detailed depth only: every acceptance criterion maps to a named test, and each interface can be mocked from the doc alone.

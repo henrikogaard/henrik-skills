@@ -14,7 +14,7 @@
         "'it should be fast' becomes a numeric NFR or a Q-n, not an adverb-only requirement",
         "'maybe some analytics later' becomes a Q-n asking for a decision, not a silent out-of-scope line",
         "The Dec 1 deadline and the use of Stripe are CON-n rows citing the source",
-        "A Traceability table gives every source statement exactly one disposition",
+        "A Traceability table has a row for every distinct statement in the Slack message (sub-parts may get their own rows), and each row names one disposition: an FR/NFR/CON/ASM ID, a Q-n, or out of scope",
         "Missing NFR topics (availability, retention, who can see what) are recorded as 'no stated NFR' or as Q-n rows",
         "The response leads with or highlights the open questions for the user"
       ]
@@ -23,13 +23,14 @@
       "id": 2,
       "name": "small-ask-stays-small",
       "prompt": "Before I build it: we want a dark mode toggle on the settings page that remembers the choice. Map the requirements quickly.",
-      "expected_output": "A short map (about a page or less) or inline requirements, not the full ceremony.",
+      "expected_output": "Starts by calling it a small ask, then inline requirements with acceptance criteria in the reply; no map file and no empty sections.",
       "files": [],
       "expectations": [
-        "The output says the ask is small and keeps the map short or inline",
-        "The whole answer is under about 60 lines",
+        "The first line of the reply states that this is a small ask (any wording) before listing requirements",
+        "No separate requirements-map file is written; the requirements are in the reply",
+        "The reply is under 40 lines, counting every file the run wrote",
         "Persisting the choice is captured as its own requirement with an acceptance criterion",
-        "No Dependencies or Conflicts sections are padded out with empty or invented rows"
+        "No Dependencies or Conflicts section appears with only empty, 'none' or invented rows"
       ]
     },
     {
