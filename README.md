@@ -20,7 +20,17 @@ Phase 2 (build): for each slice: detailed design → implement → verify → up
 - **A status line** at the top says where the work stands: `Draft` → `Approved` → `Building (slice n of m)` → `Done`.
 - **Decisions** are a numbered `D-n` log inside the doc, not separate ADR files. An accepted decision is never rewritten; a new one supersedes it.
 - **Detailed design is written per slice**, just before that slice is built, so it describes real code. The doc's Verification table maps each acceptance criterion to its test and result.
-- **Size decides the depth**: trivial fixes get no doc, small work a one-page doc, and new systems the full doc.
+- **Size decides the depth**: trivial fixes get no doc, small work a short doc under ~60 lines, and new systems the full doc.
+- **New scope on an existing doc** updates that doc, sets it back to `Draft` and asks for approval again.
+
+Typical prompts:
+
+| You say | What happens |
+|---|---|
+| "Let's build class booking for the gym" | Phase 1: writes the doc as `Draft`, stops and asks you to approve |
+| "Approved, go ahead with slice 1" | Phase 2: detailed design for slice 1, code, tests, doc updated |
+| "Can we also add a waitlist?" | Updates the existing doc, back to `Draft`, asks again |
+| "Fix the typo in the README" | Trivial: no doc, just the fix |
 
 ## How each skill is built
 
@@ -36,7 +46,7 @@ skill-name/
     files/          # fixtures the prompts refer to
 ```
 
-- **SKILL.md stays short** (under ~100 lines). A weaker model follows the steps and the checklist; a stronger one pulls in references when it needs depth.
+- **SKILL.md stays short** (about 100 lines or less). A weaker model follows the steps and the checklist; a stronger one pulls in references when it needs depth.
 - **Facts a model cannot guess go in references or scripts.** For example, `delegate-subagents/scripts/probe-agents.sh` checks every CLI flag against live `--help` output, because those flags change between releases.
 - **No skill depends on a skill that is not in this repo.**
 
@@ -59,7 +69,7 @@ Claude Code can turn a skill off in `~/.claude/settings.json` under `skillOverri
 python3 scripts/check_skills.py
 ```
 
-Checks frontmatter, SKILL.md length, that every `references/` and `scripts/` path a skill names exists, that every slash-named skill in a Markdown file is in this repo, and that each `evals/evals.json` parses and its fixture files exist.
+Checks frontmatter, SKILL.md length, that every `references/` and `scripts/` path a skill names exists, that every slash-named skill in a Markdown file is in this repo, and that each `evals/evals.json` parses and its fixture files and project folders exist.
 
 ## Evals
 
