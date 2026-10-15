@@ -1,10 +1,11 @@
 # henrik-skills
 
-Three agent skills in the open Agent Skills layout (`SKILL.md` with frontmatter). They work in Claude Code and any harness that reads `~/.agents/skills`.
+Four agent skills in the open Agent Skills layout (`SKILL.md` with frontmatter). They work in Claude Code and any harness that reads `~/.agents/skills`.
 
 | Skill | What it does | Reach for it when |
 |---|---|---|
 | `/design-doc` | The start of all new engineering work: requirements, scope, conceptual and logical design in one Markdown doc, an approval stop, then detailed design written slice by slice while building | "Let's build…", "new feature", "what are we building?" |
+| `/architecture-review` | Reviews an existing or legacy codebase: hot spots from git history, modules to split, pass-throughs to delete, duplicated or drifting logic, and excess tests to merge or remove. Reports first; a picked candidate becomes a design-doc refactor | "Assess this codebase", "this part is painful to change", "too many tests" |
 | `/delegate-subagents` | Runs external agent CLIs (codex, claude, grok, cursor, omp, pi, devin) in parallel and reconciles their output | "Ask codex and claude", "second opinion" |
 | `/summary-tables` | Formats status and close-out readouts as one evidence-backed table | "Is #88 done?", "what shipped?" |
 
@@ -31,6 +32,20 @@ Typical prompts:
 | "Approved, go ahead with slice 1" | Phase 2: detailed design for slice 1, code, tests, doc updated |
 | "Can we also add a waitlist?" | Updates the existing doc, back to `Draft`, asks again |
 | "Fix the typo in the README" | Trivial: no doc, just the fix |
+
+## The architecture review flow
+
+For code that already exists. `/architecture-review` changes nothing on its own:
+
+```
+facts (scripts) → review code and tests → ranked candidates → report → you pick one → /design-doc refactor
+```
+
+- **Two scripts** gather the facts in seconds, for any language: `repo_facts.py` (hot spots from git history, largest files, files that change together, tests per folder) and `test_smells.py` (duplicate, same-shape, assertion-free, tautological, mock-heavy, call-count, private-access and skipped tests). Their output is a lead list; the agent confirms each lead in the code.
+- **Every candidate carries evidence**: `file:line`, commit and co-change counts, and what it costs today. It is ranked `Strong`, `Worth exploring` or `Speculative`.
+- **Tests aim for fewer, stronger tests at seams.** No test is deleted unless a kept test still covers its behavior, checked with coverage or a mutation spot-check.
+- **The report goes to the temp directory** unless you ask to keep it in `docs/architecture/`.
+- **A picked candidate becomes a design doc** whose plan starts with characterization tests and moves code in small slices that keep the build green.
 
 ## How each skill is built
 
@@ -69,7 +84,7 @@ Claude Code can turn a skill off in `~/.claude/settings.json` under `skillOverri
 python3 scripts/check_skills.py
 ```
 
-Checks frontmatter, SKILL.md length, that every `references/` and `scripts/` path a skill names exists, that every slash-named skill in a Markdown file is in this repo, and that each `evals/evals.json` parses and its fixture files and project folders exist.
+Checks frontmatter, SKILL.md length, that every `references/` and `scripts/` path a skill names exists, that every slash-named skill in a Markdown file is in this repo, and that each `evals/evals.json` parses and its fixture files, project folders and setup scripts exist.
 
 ## Evals
 
@@ -80,9 +95,9 @@ To run them, ask an agent with `skill-creator`: "run the evals for design-doc ag
 When running by hand:
 
 1. Copy the skill **without** its `evals/` folder, so the agent under test cannot read the expectations.
-2. Copy the fixtures from `evals/files/` to a neutral folder and point the prompt there. When an eval sets `project`, copy that folder as the agent's project root, fresh for every run, because the agent edits it.
+2. Copy the fixtures from `evals/files/` to a neutral folder and point the prompt there. When an eval sets `project`, copy that folder as the agent's project root, fresh for every run, because the agent edits it. When it sets `setup`, run that script with a new folder path instead; it builds the project, including git history (for example `architecture-review/evals/files/make_shop_repo.py <dest>`).
 3. Run the prompt with the skill and with the baseline (no skill, or the old version), ideally on a small model too: a skill that only works on the strongest model is fragile.
-4. Tell the agent where to write files and to put its full final message in `answer.md`. If you also want a short chat reply such as "done", say plainly that it is separate from `answer.md`; otherwise some agents write only "done" there.
+4. Tell the agent where to write files and to put its full final message in `answer.md`. If the run is unattended, tell it not to wait for answers but still to end with any closing question it would ask; otherwise weaker models drop the question. If you also want a short chat reply such as "done", say plainly that it is separate from `answer.md`; otherwise some agents write only "done" there.
 5. Mark each expectation true or false with evidence. Grade the whole output folder, not only `answer.md`.
 
 ## License

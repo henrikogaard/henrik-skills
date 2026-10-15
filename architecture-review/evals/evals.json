@@ -1,0 +1,82 @@
+{
+  "skill_name": "architecture-review",
+  "evals": [
+    {
+      "id": 1,
+      "name": "full-review-legacy-shop",
+      "prompt": "This is our old shop backend. Assess the architecture and tell me what we should split, refactor or clean up, tests included.",
+      "setup": "evals/files/make_shop_repo.py",
+      "expected_output": "A report (in the temp dir) with hot spots from git history, ranked evidence-backed candidates covering the god module, the pass-through service, duplicated and drifting logic, the speculative storage abstraction, dead code and the test suite, ending with the top three and a question; no file in the repo changed.",
+      "files": [],
+      "expectations": [
+        "A report file is written and its path is given, and `git status` in the project shows no changed or added files",
+        "shop/orders.py is named the top hot spot, citing its commit count (15) or its co-change with shop/reports.py (7 shared commits)",
+        "Splitting shop/orders.py is proposed by responsibility, naming at least three of: pricing/discount/tax, email, stock/inventory, export, storage, each with line ranges or functions",
+        "OrderService in shop/order_service.py is identified as a pass-through (deletion test or equivalent), with a recommendation to delete or inline it",
+        "format_money is reported as duplicated in shop/orders.py, shop/reports.py and shop/utils.py",
+        "shop/reports.py is found to recompute discount and tax itself with a flat 25% rate, which drifts from orders.compute_tax (food is taxed at 15% there)",
+        "StorageBackend/StorageFactory is flagged as an abstraction with a single implementation",
+        "Hidden dependencies are flagged: smtplib.SMTP created inside _send_confirmation, or the module-level _storage and INVENTORY globals",
+        "The test review names concrete weak tests: the format_money duplicates, the six _round_cents copies, the tautological format_money test, and at least two of: the constants tests, test_export_runs (no assertion), the skipped email test, test_create_order_calls_helpers (mock call counts), the OrderService delegation tests",
+        "The behaviour tests test_discount_ten and test_food_tax are kept, and no proposal deletes the only test of a behaviour",
+        "Missing tests are listed, including at least one of: discount combined with tax, cancel_order restoring stock or refusing shipped orders, report totals",
+        "Candidates are ranked (at most 7) with a strength, an effort and file:line evidence each",
+        "The reply leads with the top three candidates and asks which to pursue"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "too-many-tests",
+      "prompt": "Codex wrote way too many tests in this repo. Clean up the test suite.",
+      "setup": "evals/files/make_shop_repo.py",
+      "expected_output": "A per-test verdict list with before and after counts, what stays covered, the missing tests, and the deletion safety check, then a stop for approval before deleting anything.",
+      "files": [],
+      "expectations": [
+        "Every test or test group in tests/test_orders.py and tests/test_order_service.py gets a verdict (keep, merge, move, delete)",
+        "The duplicates (format_money_a/b, test_unknown_sku/_again) are merged or reduced to one, and the six _round_cents tests are merged into one parametrized test or removed in favour of interface tests",
+        "Tautological, assertion-free, constants and permanently skipped tests are marked for deletion or rewrite",
+        "test_create_order_calls_helpers and the OrderService delegation tests are recognised as implementation-coupled (asserting mock calls)",
+        "Each deletion or merge names the kept test that still covers the behaviour, or says a replacement test is needed first",
+        "A before/after test count is given",
+        "Missing tests for real behaviour are listed (for example discount plus tax, cancel_order, stock checks or reports)",
+        "A deletion safety check is described: coverage before and after, or a mutation spot-check showing a kept test fails when the behaviour breaks",
+        "No test or source file is changed yet; the reply asks for approval before deleting"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "scoped-pain-point",
+      "prompt": "Changing anything in the sales reporting is painful. Can you look at just that part?",
+      "setup": "evals/files/make_shop_repo.py",
+      "expected_output": "A review scoped to reports, showing its coupling to orders, the duplicated discount and tax rules and their drift, a concrete fix, and the missing report tests.",
+      "files": [],
+      "expectations": [
+        "The scope is stated as the reporting code (shop/reports.py and what it depends on)",
+        "The coupling between shop/reports.py and shop/orders.py is shown with evidence (7 shared commits, or reports re-deriving order internals)",
+        "The duplicated discount rules and flat 25% tax in reports.py are identified as drifting from orders.py (food is 15% there)",
+        "The proposed fix makes reports use the order's own stored amounts or an orders-owned function instead of recomputing, rather than adding a new layer",
+        "The missing tests for monthly_report are listed",
+        "Unrelated areas (storage, email, OrderService) get at most a brief mention, not full candidates",
+        "No file in the project is changed",
+        "The reply ends by asking which change to pursue"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "plan-chosen-split",
+      "prompt": "We went through the architecture review and want to go with splitting shop/orders.py into separate pricing, notification and stock modules. Plan it.",
+      "setup": "evals/files/make_shop_repo.py",
+      "expected_output": "A Draft design doc for the refactor whose plan starts with characterization tests at the create_order seam, moves one responsibility per slice with the build green, separates moves from behaviour changes, and stops for approval.",
+      "files": [],
+      "expectations": [
+        "A design doc is written under docs/design/ with 'Status: Draft'",
+        "The first slice adds characterization tests through the public interface (create_order, cancel_order and the exports), not through internal helpers, before any code moves",
+        "Later slices move one responsibility at a time (pricing, notification, stock), each keeping the existing tests green",
+        "Moves are kept separate from behaviour changes; the reports.py tax drift, if mentioned, is handled as its own decision or question, not fixed inside a move",
+        "The plan says how tests that patch orders internals (for example test_create_order_calls_helpers) will be handled when code moves",
+        "The new modules' interfaces are named (functions or classes each module exposes)",
+        "No source or test file is changed, and the reply asks for approval"
+      ]
+    }
+  ]
+}

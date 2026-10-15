@@ -9,7 +9,7 @@ Checks per skill folder (any top-level folder with a SKILL.md):
 - SKILL.md body stays under 500 lines
 - every references/ or scripts/ path named in SKILL.md exists
 - every `/skill-name` mentioned in any .md file is a skill in this repo
-- evals/evals.json parses, names the right skill, and every listed file and project folder exists
+- evals/evals.json parses, names the right skill, and every listed file, project folder and setup script exists
 - files under scripts/ are executable
 """
 import json
@@ -88,6 +88,9 @@ for name in skills:
         project = e.get("project")
         if project and not os.path.isdir(os.path.join(sdir, project)):
             fail(f"{name}: eval {e.get('id')} names missing project folder {project}")
+        setup = e.get("setup")
+        if setup and not os.access(os.path.join(sdir, setup), os.X_OK):
+            fail(f"{name}: eval {e.get('id')} setup script {setup} is missing or not executable")
 
 # Slash references in prose must point at skills that exist here.
 for dirpath, dirnames, filenames in os.walk(ROOT):
