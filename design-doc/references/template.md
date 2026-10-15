@@ -1,6 +1,29 @@
 # Design doc skeleton
 
-One file per piece of work: `docs/design/<slug>.md` unless the repo has its own convention. Keep the headings in this order so people and agents find them. Leave out a section that would be empty; for small work, collapse Conceptual and Logical into one short "Design" section.
+One file per piece of work: `docs/design/<slug>.md` unless the repo has its own convention. Keep the headings in this order so people and agents find them. Leave out a section that would be empty.
+
+**Small work uses the short skeleton below instead** (under ~60 lines). Add a Decisions, Verification or Codebase deltas section only when it has real content; never write "none".
+
+```markdown
+# <Work title>
+
+Status: Draft
+Size: Small — <one-line reason>
+Owner: <who asked> · Started: <date>
+
+## Requirements
+- FR-1 (Must): <requirement>. AC: <given / when / then>
+## Scope
+- In: FR-1, FR-2
+## Design
+<a few lines: what changes, in which files, reusing what>
+## Build plan
+1. <slice> — FR-1, FR-2
+## Open questions
+- Q-1: <question> (blocks FR-2)
+```
+
+The full skeleton:
 
 Phase 1 writes sections 1–8 and stops for approval. Phase 2 adds to sections 9–11 one slice at a time.
 

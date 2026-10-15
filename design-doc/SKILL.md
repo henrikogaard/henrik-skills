@@ -21,7 +21,7 @@ The doc's first lines carry a status everyone can read at a glance:
 1. **Look for an existing doc** in the repo's design docs folder (default `docs/design/`). If one covers this work, read it, read its status, and continue from there. Never start a second doc for the same work.
 2. **Size the work and say which size in your first line:**
    - *Trivial* (a typo, a config value, a one-line fix with an obvious test): say "Trivial: no design doc", then just do it.
-   - *Small* (a change inside a settled architecture, a few requirements): a one-page doc. Requirements and scope in short lists, a short design section, a plan of one or two slices. Leave out any section with nothing in it.
+   - *Small* (a change inside a settled architecture, a few requirements): a one-page doc, **under ~60 lines**. Only these sections: Requirements (FRs with acceptance criteria as a short list), Scope (In; add Out or Later only if something is in them), Design (a few lines on what changes and where in the code), Build plan (one or two slices), Open questions. Add Decisions, Verification or Codebase deltas only once they have real content. Never write a heading or row that says "none".
    - *Full* (a new system, a service, an integration, or anything that crosses component boundaries): every section.
 3. **Read the code** if it exists, before designing. Where the code and the design will disagree, record it under "Codebase deltas" with a ruling: the design yields, the code migrates, or it becomes a `Q-n`.
 
@@ -39,6 +39,16 @@ Write these sections in order, using the skeleton in `references/template.md`. R
 Then **stop**. Present the doc leading with the open questions, the balanced tradeoffs and the top risks, and ask the user to approve it. Write no code before approval. On approval, set `Status: Approved (<date>, <who>)`. If the user changes something, update the doc first, then ask again.
 
 If the user is away, finish Phase 1 on stated working assumptions (listed at the top and in the risk register), leave `Status: Draft`, and stop.
+
+## New scope on an existing doc
+
+When the user asks for something new and a doc for this work already exists, change that doc; do not start a second one. Treat the addition as a small Phase 1 inside it:
+
+1. Add each new need as a requirement with the next free ID and an acceptance criterion. Move it into Scope *In*, out of *Later* if it was parked there.
+2. Update the design where the addition touches it: contracts, data ownership, the scenario walkthroughs, and how existing NFRs still hold.
+3. Add a `D-n` for any pivotal choice. Make a recommended choice; if the tradeoff is balanced, mark it `Proposed` with your recommendation rather than leaving it open.
+4. Add a slice to the build plan and new questions to Open questions.
+5. Set `Status: Draft` again, add a change-log line, and ask the user to approve the changed scope. Write no code for it before approval.
 
 ## Phase 2: build, one slice at a time
 

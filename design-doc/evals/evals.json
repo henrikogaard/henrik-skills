@@ -27,14 +27,17 @@
       "prompt": "Let's add a dark mode toggle to the settings page that remembers the choice.",
       "project": "evals/files/small-app",
       "expected_output": "A short Draft design doc that reads the existing code, keeps sections small, plans one or two slices and asks for approval before changing code.",
-      "files": ["evals/files/small-app/app.js", "evals/files/small-app/settings.html"],
+      "files": [
+        "evals/files/small-app/app.js",
+        "evals/files/small-app/settings.html"
+      ],
       "expectations": [
         "The reply's first line states the work is small",
         "One design doc is written under docs/design/ with a 'Status: Draft' line, and it is under 90 lines",
         "Remembering the choice is its own requirement with an acceptance criterion",
-        "The design reuses the existing settings storage in app.js (the notes.settings localStorage key or loadSettings/saveSettings)",
-        "Scope lists In, Out and Later (one line each is fine)",
-        "No section is left empty or padded with 'none' rows",
+        "The design doc's design section reuses the existing settings storage in app.js (the notes.settings localStorage key or loadSettings/saveSettings)",
+        "Scope lists In with requirement IDs; Out and Later appear only if they have items",
+        "No heading, table row or list item exists only to say none, n/a or empty (a sentence stating a real design fact, such as 'no new dependencies', is fine)",
         "The build plan has one or two slices",
         "No app file (app.js, settings.html, style.css, index.html) is changed, and the reply asks for approval"
       ]
@@ -45,7 +48,9 @@
       "prompt": "Fix the typo in the README's settings section.",
       "project": "evals/files/small-app",
       "expected_output": "Says it is trivial and needs no design doc, fixes 'recieve' to 'receive', and changes nothing else.",
-      "files": ["evals/files/small-app/README.md"],
+      "files": [
+        "evals/files/small-app/README.md"
+      ],
       "expectations": [
         "The reply says the change is trivial and needs no design doc",
         "No file is created under docs/design/",
@@ -59,7 +64,10 @@
       "prompt": "The class booking design (docs/design/class-booking.md) is approved. Go ahead and build slice 1.",
       "project": "evals/files/booking-app",
       "expected_output": "Slice 1's detailed design added to the doc, booking implemented with the transactional capacity check from D-1, passing tests for each slice-1 acceptance criterion, and the doc's status, plan, verification table and change log updated.",
-      "files": ["evals/files/booking-app/docs/design/class-booking.md", "evals/files/booking-app/booking/db.py"],
+      "files": [
+        "evals/files/booking-app/docs/design/class-booking.md",
+        "evals/files/booking-app/booking/db.py"
+      ],
       "expectations": [
         "The doc gains a 'Slice 1' detailed design section with the book operation's signature, at least one literal example call and result, and the error cases 'class full' and 'already booked'",
         "The implementation enforces capacity inside one transaction with a conditional update (or equivalent), as decision D-1 requires, plus a unique constraint on (member, slot)",
@@ -77,7 +85,9 @@
       "prompt": "Members keep asking for a waitlist when a class is full. Can we add one?",
       "project": "evals/files/booking-app",
       "expected_output": "Finds and updates the existing design doc rather than creating a new one, brings the waitlist into scope with a requirement, design changes and a plan slice, and asks for approval before building.",
-      "files": ["evals/files/booking-app/docs/design/class-booking.md"],
+      "files": [
+        "evals/files/booking-app/docs/design/class-booking.md"
+      ],
       "expectations": [
         "The existing docs/design/class-booking.md is updated and no second design doc is created",
         "The waitlist becomes an FR (FR-5 or a new ID) with an acceptance criterion and moves from Later into In",
