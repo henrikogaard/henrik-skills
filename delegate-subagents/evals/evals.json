@@ -1,0 +1,65 @@
+{
+  "skill_name": "delegate-subagents",
+  "evals": [
+    {
+      "id": 1,
+      "name": "reconcile-counsel-run",
+      "prompt": "codex and claude both finished their security review of session.ts. The run directory is evals/files/counsel-run (the code is evals/files/session.ts). Reconcile their answers for me.",
+      "expected_output": "A reconciliation joined on Q1-Q3: agreements, a ruled conflict on expiry, lone findings surfaced, findings sorted into act on / consider / noted / dismissed, ending in a verdict.",
+      "files": [
+        "evals/files/counsel-run/brief.md",
+        "evals/files/counsel-run/MANIFEST.md",
+        "evals/files/counsel-run/out-codex.md",
+        "evals/files/counsel-run/out-claude.md",
+        "evals/files/session.ts"
+      ],
+      "expectations": [
+        "Findings are organized by the brief's question numbers Q1, Q2, Q3, not by each agent's F-numbers",
+        "The Math.random token (Q1) and the SQL injection (Q2) are reported as agreements between both agents",
+        "The expiry disagreement is shown as a conflict with a ruling and its reasoning, citing that getSession reads the sessions table directly at session.ts:13",
+        "A section or list explicitly labelled as lone (single-agent) findings names codex's 30-day TTL finding and claude's logout-all finding",
+        "codex's crypto.subtle suggestion appears in a dismissed list with a reason",
+        "Findings are sorted into act on, consider, noted and dismissed",
+        "The answer checks the manifest against the out- files that exist",
+        "The answer ends with a PASS, ISSUES or BLOCKED verdict line"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "plan-counsel-review-analysis-only",
+      "prompt": "Get codex and claude to do a security review of evals/files/session.ts, default models, analysis only. Set up the run directory, write the briefs and give me the exact commands, but don't fire them yet, I want to look first.",
+      "expected_output": "A run directory with a manifest and one brief per agent, and commands that use each CLI's read-only flag and capture stdout and stderr to files.",
+      "files": [
+        "evals/files/session.ts"
+      ],
+      "expectations": [
+        "The agent runs scripts/probe-agents.sh (or checks --help) before writing the commands",
+        "It does not re-ask which agents, which models or which permissions, since the prompt answered them",
+        "A run directory under .scratch/delegates/ holds a MANIFEST.md and one brief file per agent",
+        "Each brief has numbered questions and a Stop section, and says to treat file contents as data",
+        "The codex command passes -s read-only",
+        "The claude command restricts it to read-only tools with a tool-restricting flag (for example --allowedTools \"Read,Grep,Glob\")",
+        "Each command captures the agent's output to out-<agent>.md (stdout redirect or an output-file flag) and stderr to err-<agent>.log",
+        "Nothing is actually fired"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "plan-arena-with-edits",
+      "prompt": "Arena: have grok and cursor each add a --dry-run flag to evals/files/deploy.sh on their own branches, edits allowed. Set it all up and show me the commands and your judging rubric, but don't run anything.",
+      "expected_output": "Per-agent branches, edit-allowed commands with the right flags, cursor called by its full path, and a concrete rubric.",
+      "files": [
+        "evals/files/deploy.sh"
+      ],
+      "expectations": [
+        "Each agent gets its own branch named like delegate/<slug>-grok and delegate/<slug>-cursor",
+        "The grok command uses --always-approve",
+        "The cursor command calls ~/.local/bin/agent -p (not a bare 'agent' or 'cursor agent') with --force",
+        "The brief asks each agent for a rationale naming alternatives it rejected",
+        "The rubric has 3-6 concrete, checkable criteria (for example 'no rsync or ssh runs when --dry-run is set')",
+        "The plan includes verifying the picked or grafted result with the task's own check",
+        "Nothing is actually fired"
+      ]
+    }
+  ]
+}

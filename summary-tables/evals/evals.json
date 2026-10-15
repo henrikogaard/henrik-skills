@@ -1,0 +1,49 @@
+{
+  "skill_name": "summary-tables",
+  "evals": [
+    {
+      "id": 1,
+      "name": "acceptance-criteria-readout",
+      "prompt": "Based on my work log (evals/files/work-log.md), is #88 done? Give me the status against the acceptance criteria.",
+      "expected_output": "Starts with No or Partly, one table of the four criteria with fixed status words and evidence, then the supporting facts and a Verified line.",
+      "files": ["evals/files/work-log.md"],
+      "expectations": [
+        "The first sentence answers the question directly with No or Partly",
+        "One table has a row for each of the four acceptance criteria",
+        "Status cells use only Complete, Partial, Missing, Pending or Blocked, each followed by evidence",
+        "Criterion 3 (duplicates) is not marked Complete and cites the failing test",
+        "Criterion 4 (performance) is marked as not verified, with the reason (no 5,000-row test run)",
+        "The commit 9f3e2a1, branch feature/88-csv-import and draft PR #93 with CI running all appear",
+        "The intentionally excluded scratch/members-sample.csv is mentioned",
+        "No emoji are used for status",
+        "It ends with a Verified: or Net: line"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "review-fixes-table",
+      "prompt": "I fixed the three review comments on PR #93: (1) parseCsv crashed on a BOM, now strips it, added a test; (2) the error list showed row index from 0, now from 1 to match the spreadsheet; (3) reviewer wanted the import capped at 10k rows, I added the cap but no test yet. Summarize what changed for the PR thread.",
+      "expected_output": "A short bottom line and a #, Finding, Fix table with three rows, flagging the missing test on item 3.",
+      "files": [],
+      "expectations": [
+        "The table uses columns like #, Finding (or Suggestion) and Fix",
+        "There is one row per review comment, three in total",
+        "Item 3 states that the cap has no test yet",
+        "Every cell stays on one line (no line breaks or pipes inside cells)",
+        "The bottom line comes before the table"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "one-fact-no-table",
+      "prompt": "Quick one: which branch is the CSV import work on? (see evals/files/work-log.md)",
+      "expected_output": "A one-sentence answer naming feature/88-csv-import, no table.",
+      "files": ["evals/files/work-log.md"],
+      "expectations": [
+        "The answer names feature/88-csv-import",
+        "The answer contains no Markdown table",
+        "The answer is at most two sentences"
+      ]
+    }
+  ]
+}
