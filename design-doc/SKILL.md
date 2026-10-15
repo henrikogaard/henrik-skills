@@ -1,6 +1,6 @@
 ---
 name: design-doc
-description: The starting point for new engineering work. Phase 1 captures requirements and scope and writes a conceptual and logical design into one Markdown design doc, then stops for approval. Phase 2 builds the work slice by slice, writing each slice's detailed design just before implementing it and keeping the doc current with decisions, deltas and test results. Use whenever someone starts a new feature, system, service, integration or significant change ("let's build", "new feature", "what are we building", requirements, PRD, spec, architecture, design), and whenever implementing work that already has a design doc. Not for trivial fixes.
+description: The starting point for new engineering work. Phase 1 captures requirements and scope and writes a conceptual and logical design into one Markdown design doc, then stops for approval. Phase 2 builds the work slice by slice, writing each slice's detailed design just before implementing it and keeping the doc current with decisions, deltas and test results. Use whenever someone starts a new feature, system, service, integration or significant change ("let's build", "new feature", "what are we building", requirements, PRD, spec, architecture, design), and whenever implementing work that already has a design doc. Not for trivial fixes; to assess an existing codebase, use architecture-review.
 ---
 
 # Design doc
