@@ -86,7 +86,7 @@ Context: … Options: … Choice: … Consequences: …
 ### Slice 1               <!-- written just before slice 1 is built; see references/detailed.md -->
 
 ## 10. Verification
-| Acceptance criterion | Test | Result | Commit |
+| Acceptance criterion | Test | Result | Change |
 |---|---|---|---|
 
 ## 11. Codebase deltas and change log

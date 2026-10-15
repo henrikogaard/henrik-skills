@@ -77,7 +77,7 @@ Consequences: every book is a short write transaction; long reads must not hold 
 ## 7. Build plan
 | Slice | What it delivers | Requirement IDs | Status |
 |---|---|---|---|
-| 1 | Book a place with capacity and duplicate checks | FR-1, FR-4, NFR-3 | Planned |
+| 1 | Book a place with capacity and duplicate checks | FR-1, FR-4, NFR-1, NFR-3 | Planned |
 | 2 | Cancel a booking | FR-2 | Planned |
 | 3 | Late-cancel fee recorded and charged through Stripe | FR-3, CON-2 | Planned |
 
@@ -91,7 +91,7 @@ Consequences: every book is a short write transaction; long reads must not hold 
 <!-- written per slice, just before it is built -->
 
 ## 10. Verification
-| Acceptance criterion | Test | Result | Commit |
+| Acceptance criterion | Test | Result | Change |
 |---|---|---|---|
 
 ## 11. Codebase deltas and change log

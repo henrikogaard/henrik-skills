@@ -35,4 +35,4 @@ Spend depth where the risk is: components that own data, components behind the h
 
 ## After building the slice
 
-Update the doc in the same commit as the code: the Verification table (criterion → test → result → commit), the status line, the build plan, any Codebase deltas, any new `D-n` entries, and a change-log line. If the code had to differ from this detailed design, fix the detailed design to match what was built and say why in the delta.
+Update the doc in the same commit as the code: the Verification table (criterion → test → result → change: the PR, or "this change", since a commit cannot contain its own hash), the status line, the build plan, any Codebase deltas, any new `D-n` entries, and a change-log line. If the code had to differ from this detailed design, fix the detailed design to match what was built and say why in the delta.

@@ -73,6 +73,7 @@
         "The implementation enforces capacity inside one transaction with a conditional update (or equivalent), as decision D-1 requires, plus a unique constraint on (member, slot)",
         "There are tests for FR-1, FR-4 and NFR-3, including one with concurrent or interleaved booking attempts on the last place",
         "All tests pass when the grader runs `python3 -m unittest discover -s tests` in the project",
+        "NFR-1 (≤ 500 ms p95 at 50 bookings/s) gets a load test with a recorded result, or a stated reason in the doc why it waits for a later slice",
         "The Verification table has a row per slice-1 acceptance criterion with a test name and a result",
         "The status line reads 'Building (slice 1 of 3)' or equivalent, and slice 1 is marked done in the build plan",
         "A change-log line describes the slice-1 work",

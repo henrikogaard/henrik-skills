@@ -56,12 +56,12 @@ Only start when the status is `Approved` or `Building`. For each slice, in plan 
 
 1. **Detailed design for this slice only** (`references/detailed.md`), under "Detailed design → Slice n": interfaces with one literal example, data changes and migrations, failure modes, and the tests for this slice's acceptance criteria. This is where products and versions get pinned, each pivotal one as a `D-n`. Write it just before building, so it matches the code that exists.
 2. **Implement** through the repo's normal workflow (branch, tests, PR). Link the doc from the PR.
-3. **Verify.** Run the tests. Fill the Verification table: acceptance criterion → test → result → commit. A criterion without a passing test is not done; say so.
+3. **Verify.** Run the tests. Fill the Verification table: acceptance criterion → test → result → change (the PR, or "this change"; a commit cannot contain its own hash). A criterion without a passing test is not done: record the failure, keep the slice open, and say so.
 4. **Update the doc** in the same commit as the code: set `Status: Building (slice n of m)`, mark the slice done in the plan, record any code that diverged from the design under "Codebase deltas", add new `D-n` entries, and add a change-log line.
 
 If building shows the logical design is wrong (a contract, a data owner or the scope must change), stop. Update the logical section and add a `D-n` that supersedes the old choice, then ask the user before continuing. Small detail-level changes need no approval; record them as deltas.
 
-When every slice is done and every acceptance criterion has a result, set `Status: Done (<date>)`.
+When every slice is done and every acceptance criterion has a **passing** result, set `Status: Done (<date>)`. A failed, skipped or blocked test keeps the work open.
 
 If the work goes to implementers who were not in the conversation, write every slice's detailed design before Phase 2 starts, and say so.
 
@@ -102,5 +102,5 @@ Phase 1:
 
 Each Phase 2 slice:
 - [ ] Its detailed design was written before its code.
-- [ ] Every acceptance criterion of the slice has a test and a recorded result.
+- [ ] Every acceptance criterion of the slice has a test with a passing result; a failing one keeps the slice open and is recorded.
 - [ ] The status line, plan, deltas, decisions and change log are updated in the same commit as the code.
