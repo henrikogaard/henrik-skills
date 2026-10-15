@@ -3,51 +3,99 @@
   "evals": [
     {
       "id": 1,
-      "name": "new-system-conceptual-logical",
-      "prompt": "Here's the requirements map for our class booking system (evals/files/booking-requirements-map.md). Design the architecture: conceptual and logical, no detailed spec yet. Write it to docs/design/booking-design.md.",
-      "expected_output": "A conceptual + logical design doc traced to the map's IDs, with a coverage table that closes.",
-      "files": ["evals/files/booking-requirements-map.md"],
+      "name": "start-new-work-full",
+      "prompt": "We're starting a new project. Our gym owner sent this in Slack, get us going:\n\n\"ok so members need to book classes on their phone, and cancel up to 2h before or they get charged. coaches should see who's coming. we have 3 sites now, maybe 5 next year. it HAS to be live before the january rush (dec 1). we use stripe already for memberships so payments should go through that. maybe some analytics later on attendance? oh and it should be fast, people complain the current thing is slow\"",
+      "expected_output": "One design doc in docs/design/ with Status: Draft, requirements, scope, conceptual and logical design, a decisions log and a build plan, then a stop asking for approval with no code written.",
+      "files": [],
       "expectations": [
-        "The doc states its depth (conceptual + logical) and why near the top",
-        "Q-1 (late-cancel fee scope) is handled as a blocking question or a stated working assumption",
-        "The context map marks at least one trust boundary and names threats at it",
-        "Components are named after the domain, not technology products",
-        "The logical level names no products other than those forced by a CON-n (Stripe, PostgreSQL)",
-        "A data ownership table gives each datum exactly one owner",
-        "Scenario walkthroughs name the contract at each hop and together cover FR-1 to FR-4",
-        "NFR-1 has a mechanism with a line of arithmetic or capacity reasoning",
-        "NFR-3 (never overbooked) has a concrete mechanism, such as a transactional or conditional update",
-        "A coverage table lists every FR and NFR with a component, and every component lists requirement IDs"
+        "The reply's first line states the size of the work (Full, or equivalent)",
+        "Exactly one design doc is written under docs/design/, and its first lines include a 'Status: Draft' line",
+        "The Requirements section has numbered sources and FR/NFR/CON IDs, and every Must and Should FR has an acceptance criterion",
+        "'maybe 5 next year' and 'maybe some analytics' are open questions or Later items, not silently ruled Out",
+        "A Scope section lists In, Out and Later",
+        "The design has a context map marking at least one trust boundary, and a data ownership table where every datum has one named owner",
+        "At least one scenario walkthrough names the contract or operation called at each hop",
+        "'it should be fast' becomes a numeric NFR with a mechanism, or an open question asking for the number",
+        "Pivotal choices are recorded as numbered D-n entries with context, options and choice inside the doc, and no separate ADR file is created",
+        "A build plan lists slices, each with the requirement IDs it delivers",
+        "No implementation code is written, and the reply asks the user to approve the doc, leading with open questions"
       ]
     },
     {
       "id": 2,
-      "name": "small-change-stays-conceptual",
-      "prompt": "In our existing booking system (see evals/files/booking-requirements-map.md), we just want to add FR-5, the waitlist. The rest of the architecture is settled. Give me the design for that.",
-      "expected_output": "A short design that picks conceptual-only (or a compressed logical pass) and says what it compressed and why.",
-      "files": ["evals/files/booking-requirements-map.md"],
+      "name": "start-new-work-small",
+      "prompt": "Let's add a dark mode toggle to the settings page that remembers the choice.",
+      "project": "evals/files/small-app",
+      "expected_output": "A short Draft design doc that reads the existing code, keeps sections small, plans one or two slices and asks for approval before changing code.",
+      "files": [
+        "evals/files/small-app/app.js",
+        "evals/files/small-app/settings.html"
+      ],
       "expectations": [
-        "The doc states a reduced depth and the reason (a change inside a settled architecture)",
-        "It says which sections it compressed or skipped instead of padding every template heading",
-        "The waitlist design cites FR-5 and addresses how it interacts with NFR-3 (no overbooking)",
-        "The answer is clearly shorter than a full conceptual + logical doc"
+        "The reply's first line states the work is small",
+        "One design doc is written under docs/design/ with a 'Status: Draft' line, and it is under 90 lines",
+        "Remembering the choice is its own requirement with an acceptance criterion",
+        "The design doc's design section reuses the existing settings storage in app.js (the notes.settings localStorage key or loadSettings/saveSettings)",
+        "Scope lists In with requirement IDs; Out and Later appear only if they have items",
+        "No heading, table row or list item exists only to say none, n/a or empty (a sentence stating a real design fact, such as 'no new dependencies', is fine)",
+        "The build plan has one or two slices",
+        "No app file (app.js, settings.html, style.css, index.html) is changed, and the reply asks for approval"
       ]
     },
     {
       "id": 3,
-      "name": "detailed-spec-for-implementers",
-      "prompt": "We're handing the booking system (evals/files/booking-requirements-map.md) to a contractor team who weren't in any of our discussions. Write the full design, all the way to an implementation-ready spec for the booking component.",
-      "expected_output": "A doc at all three levels, with the booking component specified to mock-ready detail and every acceptance criterion mapped to a test.",
-      "files": ["evals/files/booking-requirements-map.md"],
+      "name": "trivial-fix-no-doc",
+      "prompt": "Fix the typo in the README's settings section.",
+      "project": "evals/files/small-app",
+      "expected_output": "Says it is trivial and needs no design doc, fixes 'recieve' to 'receive', and changes nothing else.",
+      "files": [
+        "evals/files/small-app/README.md"
+      ],
       "expectations": [
-        "The doc states its depth as all three levels because the readers are outside implementers",
-        "The booking interface has at least one literal request and response example",
-        "Error cases for booking are enumerated (for example class full, already booked)",
-        "The physical data model justifies at least one index by a query or NFR",
-        "Failure modes for Stripe cover timeout, retry with idempotency, and Stripe being down",
-        "A test strategy table maps each acceptance criterion of FR-1 to FR-4 to a named test with a type",
-        "NFR-1 gets a load test and a latency budget split across hops",
-        "Products are pinned only at the detailed level, each pivotal one with alternatives"
+        "The reply says the change is trivial and needs no design doc",
+        "No file is created under docs/design/",
+        "README.md now says 'receive' instead of 'recieve'",
+        "No other file in the project is changed"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "build-first-slice",
+      "prompt": "The class booking design (docs/design/class-booking.md) is approved. Go ahead and build slice 1.",
+      "project": "evals/files/booking-app",
+      "expected_output": "Slice 1's detailed design added to the doc, booking implemented with the transactional capacity check from D-1, passing tests for each slice-1 acceptance criterion, and the doc's status, plan, verification table and change log updated.",
+      "files": [
+        "evals/files/booking-app/docs/design/class-booking.md",
+        "evals/files/booking-app/booking/db.py"
+      ],
+      "expectations": [
+        "The doc gains a 'Slice 1' detailed design section with the book operation's signature, at least one literal example call and result, and the error cases 'class full' and 'already booked'",
+        "The implementation enforces capacity inside one transaction with a conditional update (or equivalent), as decision D-1 requires, plus a unique constraint on (member, slot)",
+        "There are tests for FR-1, FR-4 and NFR-3, including one with concurrent or interleaved booking attempts on the last place",
+        "All tests pass when the grader runs `python3 -m unittest discover -s tests` in the project",
+        "NFR-1 (≤ 500 ms p95 at 50 bookings/s) gets a load test with a recorded result, or a stated reason in the doc why it waits for a later slice",
+        "The Verification table has a row per slice-1 acceptance criterion with a test name and a result",
+        "The status line reads 'Building (slice 1 of 3)' or equivalent, and slice 1 is marked done in the build plan",
+        "A change-log line describes the slice-1 work",
+        "No cancel or fee code (slices 2 and 3) is implemented"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "scope-change-on-existing-doc",
+      "prompt": "Members keep asking for a waitlist when a class is full. Can we add one?",
+      "project": "evals/files/booking-app",
+      "expected_output": "Finds and updates the existing design doc rather than creating a new one, brings the waitlist into scope with a requirement, design changes and a plan slice, and asks for approval before building.",
+      "files": [
+        "evals/files/booking-app/docs/design/class-booking.md"
+      ],
+      "expectations": [
+        "The existing docs/design/class-booking.md is updated and no second design doc is created",
+        "The waitlist becomes an FR (FR-5 or a new ID) with an acceptance criterion and moves from Later into In",
+        "The design is updated for the waitlist, including how promotion from the waitlist keeps NFR-3 (no overbooking) true",
+        "A new D-n decision or a new build-plan slice covers the waitlist",
+        "The doc's status returns to Draft (or the reply explicitly asks for approval of the changed scope) and no waitlist code is written",
+        "A change-log line records the scope change"
       ]
     }
   ]

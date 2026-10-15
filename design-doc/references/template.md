@@ -1,49 +1,96 @@
-# Doc skeleton
+# Design doc skeleton
 
-Delete the sections for levels you did not write. Keep the headings in this order so downstream readers and tools find them.
+One file per piece of work: `docs/design/<slug>.md` unless the repo has its own convention. Keep the headings in this order so people and agents find them. Leave out a section that would be empty.
+
+**Small work uses the short skeleton below instead** (under ~60 lines). Add a Decisions, Verification or Codebase deltas section only when it has real content; never write "none".
 
 ```markdown
-# <System> — design
+# <Work title>
 
-Depth: <conceptual | conceptual + logical | all three> — <one-line reason>
-Working assumptions: <each blocking Q-n with the assumption adopted, or "none">
+Status: Draft
+Size: Small — <one-line reason>
+Owner: <who asked> · Started: <date>
 
-## Requirements baseline
-<!-- link to the requirements map, or the inline map flagged as such -->
+## Requirements
+- FR-1 (Must): <requirement>. AC: <given / when / then>
+## Scope
+- In: FR-1, FR-2
+## Design
+<a few lines: what changes, in which files, reusing what>
+## Build plan
+1. <slice> — FR-1, FR-2
+## Open questions
+- Q-1: <question> (blocks FR-2)
+```
 
-## Codebase deltas
-<!-- table: conflict | ruling (design yields / code migrates / Q-n); omit if no code exists -->
+The full skeleton:
 
-## Conceptual
+Phase 1 writes sections 1–8 and stops for approval. Phase 2 adds to sections 9–11 one slice at a time.
+
+```markdown
+# <Work title>
+
+Status: Draft
+Size: <Small | Full> — <one-line reason>
+Owner: <who asked> · Started: <date> · Approved: <date, who, or "not yet">
+Working assumptions: <assumptions adopted while the user was away, or "none">
+
+## 1. Requirements
+### Sources
+| ID | Location | What it contributes |
+|---|---|---|
+### Requirements
+| ID | Requirement | Priority | Acceptance criterion | Sources | Notes |
+|---|---|---|---|---|---|
+### Traceability          <!-- full size only: source statement | disposition -->
+### Dependencies and conflicts   <!-- full size only, and only if there are any -->
+
+## 2. Scope
+- In: <requirement IDs>
+- Out: <item — who ruled, when>
+- Later: <item — Q-n or reason>
+
+## 3. Conceptual design
 ### Purpose
 ### Context map            <!-- trust boundaries and top threats -->
-### Capabilities           <!-- table: capability | FR IDs -->
-### Components             <!-- table: component | responsibility | requirement IDs -->
+### Capabilities           <!-- capability | FR IDs -->
+### Components             <!-- component | responsibility | requirement IDs -->
 ### Domain concepts
 
-## Logical
-### Component contracts    <!-- per component: provides | guarantees | depends on -->
+## 4. Logical design
+### Component contracts    <!-- provides | guarantees | depends on -->
 ### Domain model
-### Data ownership         <!-- table: datum | owner | readers -->
+### Data ownership         <!-- datum | owner | readers -->
 ### Integration
 ### Scenario walkthroughs  <!-- numbered hops, contract per hop, FRs exercised -->
-### NFR mechanisms         <!-- table: NFR ID | mechanism | sufficiency argument | numeric? -->
-### Decisions and alternatives
+### NFR mechanisms         <!-- NFR ID | mechanism | arithmetic | numeric? -->
 ### Risk register
 
-## Detailed
-### Decisions made here    <!-- products and versions pinned, with alternatives -->
-### <Component A>          <!-- modules, interfaces, data model, sequences, states, failure modes, observability, security and config -->
-### <Component B>
-### Budget and capacity closure
-### Interface conventions
-### Test strategy          <!-- table: acceptance criterion | test | type | location -->
-### Rollout
-### Implementation order   <!-- slices, each naming the requirement IDs it makes testable -->
+## 5. Decisions
+### D-1: <title> (<Proposed | Accepted | Superseded by D-n>, <date>)
+Context: … Options: … Choice: … Consequences: …
 
-## Coverage
-<!-- one row per requirement: ID | capability | component | mechanism (NFRs) | status (covered / Q-n) -->
+## 6. Coverage
+<!-- requirement ID | capability | component | mechanism (NFRs) | slice | status -->
 
-## Open questions
-<!-- continue the requirements map's Q-n numbering -->
+## 7. Build plan
+| Slice | What it delivers | Requirement IDs | Status |
+|---|---|---|---|
+| 1 | <thinnest end-to-end path through the riskiest contract> | FR-1, NFR-3 | Planned |
+
+## 8. Open questions
+| ID | Question | Blocks | Asked of |
+|---|---|---|---|
+
+## 9. Detailed design
+### Slice 1               <!-- written just before slice 1 is built; see references/detailed.md -->
+
+## 10. Verification
+| Acceptance criterion | Test | Result | Change |
+|---|---|---|---|
+
+## 11. Codebase deltas and change log
+### Codebase deltas        <!-- where code and design differ | ruling -->
+### Change log
+- <date>: <what changed in this doc and why>
 ```

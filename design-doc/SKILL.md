@@ -1,60 +1,106 @@
 ---
 name: design-doc
-description: Write a traced design doc for a whole system or a major feature, at up to three levels — conceptual (purpose, context, black-box components), logical (contracts, domain model, data ownership, scenario walkthroughs, NFR mechanisms) and detailed (interfaces, schemas, failure modes, test strategy, build order). Use when asked for an architecture, a system design, a high-level or detailed design, a tech spec, "spec the API" or "design the schema", or when a requirements map is ready for design. Not for a change inside one module of an existing codebase.
+description: The starting point for new engineering work. Phase 1 captures requirements and scope and writes a conceptual and logical design into one Markdown design doc, then stops for approval. Phase 2 builds the work slice by slice, writing each slice's detailed design just before implementing it and keeping the doc current with decisions, deltas and test results. Use whenever someone starts a new feature, system, service, integration or significant change ("let's build", "new feature", "what are we building", requirements, PRD, spec, architecture, design), and whenever implementing work that already has a design doc. Not for trivial fixes.
 ---
 
 # Design doc
 
-One doc, up to three levels. Each level deepens the one before it and never re-architects it.
+Every piece of new work gets **one Markdown design doc** that grows with it. It holds the requirements, the scope, the design, the decisions and the evidence. Decisions live inside the doc as a numbered log, so the work needs no separate ADR files.
 
-| Level | Answers | Technology named |
-|---|---|---|
-| Conceptual | What the system is and does, in words a non-engineer follows | None |
-| Logical | How it is shaped: contracts, data owners, flows | Families only ("relational store", "persistent queue"), unless a `CON-n` forces a product |
-| Detailed | What an implementer builds, with no question left that the doc should answer | Products, versions, schemas, endpoints |
+```
+Phase 1 (plan):  requirements → scope → conceptual → logical → decisions → build plan → STOP for approval
+Phase 2 (build): for each slice: detailed design → implement → verify → update the doc
+```
 
-Products wait until the detailed level because pinning one early locks in tradeoffs nobody examined.
+The doc's first lines carry a status everyone can read at a glance:
 
-## Before you start
+`Status: Draft` → `Approved (<date>, <who>)` → `Building (slice <n> of <m>)` → `Done (<date>)`
 
-1. **Find the requirements map** (from `/requirement-mapping`). Every design element cites requirement IDs (`FR-n`, `NFR-n`, `CON-n`, `ASM-n`). If no map exists, say so, then either run that skill first or map the requirements inline under "Requirements baseline" and flag it.
-2. **Pick the depth and say why** in the doc's first lines:
-   - *Conceptual only*: a change of a few components inside a settled architecture.
-   - *Conceptual + logical*: a new system or a major feature.
-   - *All three*: the doc goes to implementers who were not in this conversation.
-3. **Read the code** if it exists. Where code and design disagree, record each conflict under "Codebase deltas" with a ruling: the design yields, the code migrates, or it becomes a `Q-n`.
-4. **Ask blocking questions first**: any open `Q-n` whose answer would change the domain model, a data owner or a pinned product. If the user cannot answer, adopt a working assumption, write it at the top of the doc, and add it to the risk register.
+## Start: find or create the doc
 
-## Write each level
+1. **Look for an existing doc** in the repo's design docs folder (default `docs/design/`). If one covers this work, read it, read its status, and continue from there. Never start a second doc for the same work.
+2. **Size the work and say which size in your first line:**
+   - *Trivial* (a typo, a config value, a one-line fix with an obvious test): say "Trivial: no design doc", then just do it.
+   - *Small* (a change inside a settled architecture, a few requirements): a one-page doc, **under ~60 lines**. Only these sections: Requirements (FRs with acceptance criteria as a short list), Scope (In; add Out or Later only if something is in them), Design (a few lines on what changes and where in the code), Build plan (one or two slices), Open questions. Add Decisions, Verification or Codebase deltas only once they have real content. Never write a heading or row that says "none".
+   - *Full* (a new system, a service, an integration, or anything that crosses component boundaries): every section.
+3. **Read the code** if it exists, before designing. Where the code and the design will disagree, record it under "Codebase deltas" with a ruling: the design yields, the code migrates, or it becomes a `Q-n`.
 
-Read the reference for a level before writing it. They hold the step lists and the reasons.
+## Phase 1: plan
 
-- Conceptual and logical: `references/conceptual-logical.md`
-- Detailed: `references/detailed.md`
-- Doc skeleton: `references/template.md`
+Write these sections in order, using the skeleton in `references/template.md`. Read each reference before writing its sections.
 
-## The rules that matter most
+1. **Requirements** (`references/requirements.md`): numbered sources, then `FR-n`, `NFR-n`, `CON-n`, `ASM-n` and `Q-n` rows. Every Must and Should FR gets an acceptance criterion. Every source statement ends up as a requirement, an open question or an out-of-scope line.
+2. **Scope**: three short lists. *In* (requirement IDs), *Out* (with who ruled and when), *Later* (deferred, with the `Q-n` or reason).
+3. **Conceptual and logical design** (`references/conceptual-logical.md`): purpose, context map with trust boundaries, capabilities, components, then contracts, domain model, data ownership, scenario walkthroughs and NFR mechanisms. Technology families only, no products, unless a `CON-n` forces one.
+4. **Decisions**: one `D-n` entry per pivotal choice. See "Decisions log" below.
+5. **Build plan**: slices, thinnest end-to-end slice first (the one that exercises the riskiest contract). Each slice lists the requirement IDs it makes testable.
+6. **Open questions**: every `Q-n` still unanswered, with what it blocks.
 
-- **Trace both ways.** Every requirement has a home (capability + component, plus a mechanism for NFRs). Every component is justified by at least one requirement. A component with no requirement is invented scope: cut it or find its requirement.
-- **One owner per datum.** Other components read through the owner's contract. Two owners is a future consistency bug; call it out. If the owner is unclear, name a provisional owner and raise a `Q-n` to confirm it; never leave the owner cell blank or "unresolved".
-- **Walkthroughs are the stress test.** Walk the riskiest scenarios hop by hop. A step with no owner, or an invariant that cannot hold mid-flow, means the design has a hole. Fix the design, not the walkthrough.
-- **NFR mechanisms show arithmetic.** "100 rps × 2 KB = 200 KB/s; one replica handles 10×" is a mechanism. "Add a cache" is not.
-- **Record only pivotal decisions.** Pivotal means reversing it touches more than one component's contract or forces a data migration. Give 2–3 alternatives and why the chosen one wins. Where a tradeoff is balanced, ask the user instead of choosing silently.
-- **Unknowns are visible.** Put them in "Open questions", continuing the map's `Q-n` numbering. An honest gap beats a silent guess.
-- **Scale to the system.** A small system gets short sections. Say what you compressed and why; never pad a heading to match the template.
+Then **stop**. Present the doc leading with the open questions, the balanced tradeoffs and the top risks, and ask the user to approve it. Write no code before approval. On approval, set `Status: Approved (<date>, <who>)`. If the user changes something, update the doc first, then ask again.
+
+If the user is away, finish Phase 1 on stated working assumptions (listed at the top and in the risk register), leave `Status: Draft`, and stop.
+
+## New scope on an existing doc
+
+When the user asks for something new and a doc for this work already exists, change that doc; do not start a second one. Treat the addition as a small Phase 1 inside it:
+
+1. Add each new need as a requirement with the next free ID and an acceptance criterion. Move it into Scope *In*, out of *Later* if it was parked there.
+2. Update the design where the addition touches it: contracts, data ownership, the scenario walkthroughs, and how existing NFRs still hold.
+3. Add a `D-n` for any pivotal choice. Make a recommended choice; if the tradeoff is balanced, mark it `Proposed` with your recommendation rather than leaving it open.
+4. Add a slice to the build plan and new questions to Open questions.
+5. Set `Status: Draft` again, add a change-log line, and ask the user to approve the changed scope. Write no code for it before approval.
+
+## Phase 2: build, one slice at a time
+
+Only start when the status is `Approved` or `Building`. For each slice, in plan order:
+
+1. **Detailed design for this slice only** (`references/detailed.md`), under "Detailed design → Slice n": interfaces with one literal example, data changes and migrations, failure modes, and the tests for this slice's acceptance criteria. This is where products and versions get pinned, each pivotal one as a `D-n`. Write it just before building, so it matches the code that exists.
+2. **Implement** through the repo's normal workflow (branch, tests, PR). Link the doc from the PR.
+3. **Verify.** Run the tests. Fill the Verification table: acceptance criterion → test → result → change (the PR, or "this change"; a commit cannot contain its own hash). A criterion without a passing test is not done: record the failure, keep the slice open, and say so.
+4. **Update the doc** in the same commit as the code: set `Status: Building (slice n of m)`, mark the slice done in the plan, record any code that diverged from the design under "Codebase deltas", add new `D-n` entries, and add a change-log line.
+
+If building shows the logical design is wrong (a contract, a data owner or the scope must change), stop. Update the logical section and add a `D-n` that supersedes the old choice, then ask the user before continuing. Small detail-level changes need no approval; record them as deltas.
+
+When every slice is done and every acceptance criterion has a **passing** result, set `Status: Done (<date>)`. A failed, skipped or blocked test keeps the work open.
+
+If the work goes to implementers who were not in the conversation, write every slice's detailed design before Phase 2 starts, and say so.
+
+## Decisions log
+
+Record a decision when it is **pivotal**: reversing it would touch more than one component's contract or force a data migration. Each entry:
+
+```markdown
+### D-3: Charge late-cancel fees after the cancel commits (Accepted, 2026-10-15)
+Context: a slow Stripe call must not block a member's cancel (NFR-1).
+Options: (a) charge inside the cancel request; (b) charge after commit via an outbox.
+Choice: (b). Cancels never wait on Stripe; a failed charge is retried and reported.
+Consequences: fee status is eventually consistent; needs a retry job (slice 3).
+```
+
+Status is `Proposed`, `Accepted` or `Superseded by D-n`. Never rewrite an accepted entry; add a new one that supersedes it. Where a tradeoff is balanced, leave it `Proposed` and ask the user. If the repo already has ADR files, link the relevant ones from the log instead of adding new ADRs.
+
+## Rules that matter most
+
+- **Trace both ways.** Every requirement has a home in the design, and every component cites at least one requirement. A component with no requirement is invented scope.
+- **Unknowns stay visible.** An honest `Q-n` beats a guessed requirement or a silent choice.
+- **One owner per datum.** If unclear, name a provisional owner and raise a `Q-n`; never leave it blank.
+- **Walkthroughs are the stress test.** A step with no owner means the design has a hole. Fix the design, not the walkthrough.
+- **NFR mechanisms show arithmetic.** "Add a cache" is not a mechanism.
+- **The doc tells the truth about the code.** When they disagree, update the doc in the same change.
+- **Scale to the work.** Leave out empty sections. Never pad a heading to match the template.
 
 ## Done when
 
-- [ ] Depth chosen and stated, with the reason.
-- [ ] Coverage table closes: every requirement has a home or is escalated as a `Q-n`, and every component lists its requirement IDs.
-- [ ] Every `CON-n` is honored or escalated.
-- [ ] Logical depth: every datum in the data ownership table has one named owner (provisional ones carry a `Q-n`).
-- [ ] The scenario walkthroughs together exercise every Must FR and every NFR mechanism.
-- [ ] Every numeric NFR has a mechanism with arithmetic (logical) and, at detailed depth, a budget that sums under the target.
-- [ ] Detailed depth only: every acceptance criterion maps to a named test, and each interface can be mocked from the doc alone.
+Phase 1:
+- [ ] The first line states the size; the status line is present.
+- [ ] Every source statement has a disposition, and every Must and Should FR has an acceptance criterion.
+- [ ] Scope lists In, Out and Later.
+- [ ] Coverage closes: every requirement has a design home, every component cites a requirement, every `CON-n` is honored or escalated.
+- [ ] Every pivotal choice is a `D-n` entry.
+- [ ] The build plan's slices cover every Must requirement.
+- [ ] You stopped and asked for approval, with no code written.
 
-## Output
-
-One Markdown file. Use the repo's docs convention; otherwise `docs/design/<system>-design.md`, and say where you put it. Rough size: 150–300 lines for conceptual + logical on a mid-size system; detailed adds about 80–120 lines per deep component. Length should come from components and requirements, not commentary.
-
-Present the doc leading with what needs the user's eye: balanced tradeoffs, products pinned at the detailed level, the top risks and the open questions. Then give the implementation order, if the doc has one.
+Each Phase 2 slice:
+- [ ] Its detailed design was written before its code.
+- [ ] Every acceptance criterion of the slice has a test with a passing result; a failing one keeps the slice open and is recorded.
+- [ ] The status line, plan, deltas, decisions and change log are updated in the same commit as the code.
