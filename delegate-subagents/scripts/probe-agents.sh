@@ -51,7 +51,9 @@ echo "$REGISTRY" | while IFS='|' read -r name bin helpcmd flags; do
   # Swap the bare binary name for its resolved path, then capture help.
   help="$(eval "\"$path\"${helpcmd#"$bin"}" 2>&1 </dev/null)"
   for flag in $flags; do
-    if printf '%s\n' "$help" | grep -q -- "$flag"; then
+    # Match the flag as a whole token, so "-m" does not match inside "--model".
+    escaped="$(printf '%s' "$flag" | sed 's/[][\.*^$+?(){}|/]/\\&/g')"
+    if printf '%s\n' "$help" | grep -Eq -- "(^|[^[:alnum:]-])${escaped}([^[:alnum:]-]|$)"; then
       echo "  OK       $flag"
     else
       echo "  MISSING  $flag"
