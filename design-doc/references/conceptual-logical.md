@@ -20,7 +20,7 @@ Test for this level: a reader follows it without knowing any implementation deta
 4. **Integration.** For each link between components, and between a component and an external system: direction, family (request/response, event stream, batch file, poll), who commands, who subscribes and what is authoritative.
 5. **Scenario walkthroughs.** Choose a set that together covers every Must FR and every NFR mechanism at least once; 3–5 usually suffices. Start with the riskiest: requirement conflicts, concurrency, NFRs near their limit. Walk each one as a numbered hop list naming the contract called at each hop, ending with the FRs it exercised.
 6. **NFR mechanisms.** A table of NFR ID → mechanism → sufficiency argument → numeric (yes/no). The argument is one line of arithmetic or capacity reasoning. An NFR with no mechanism is a hope, not a design. Mark numeric NFRs: the detailed level must close them with budgets.
-7. **Decisions and alternatives.** Pivotal choices only, written ADR-style: context, options, outcome. If the repo has an ADR convention, write each pivotal decision as a numbered ADR there and cite it here, so each can be superseded on its own.
+7. **Decisions.** For each pivotal choice, add a `D-n` entry to the doc's decisions log (context, options, choice, consequences, status) and cite its ID here. Do not write separate ADR files.
 8. **Risk register.** What could make this design wrong: the assumption it leans on most (carried `ASM-n` items belong here), the component with the least precedent, the NFR closest to its limit.
 
 ## Coverage table
