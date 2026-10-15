@@ -89,7 +89,8 @@ for name in skills:
         if project and not os.path.isdir(os.path.join(sdir, project)):
             fail(f"{name}: eval {e.get('id')} names missing project folder {project}")
         setup = e.get("setup")
-        if setup and not os.access(os.path.join(sdir, setup), os.X_OK):
+        setup_path = os.path.join(sdir, setup) if setup else ""
+        if setup and not (os.path.isfile(setup_path) and os.access(setup_path, os.X_OK)):
             fail(f"{name}: eval {e.get('id')} setup script {setup} is missing or not executable")
 
 # Slash references in prose must point at skills that exist here.

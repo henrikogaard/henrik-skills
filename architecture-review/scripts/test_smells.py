@@ -24,7 +24,8 @@ ASSERT = {
     "js": re.compile(r"\bexpect\s*\(|\bassert\b|\.should\b"),
     "go": re.compile(r"\bt\.(Error|Errorf|Fatal|Fatalf|Fail|FailNow)\b|\b(require|assert)\.\w+\("),
 }
-MOCK = re.compile(r"\bmock\w*|\bMagicMock\b|\bpatch(\.object)?\s*\(|@patch\b|jest\.(fn|mock|spyOn)|vi\.(fn|mock|spyOn)|\bspyOn\s*\(|\bsinon\.|gomock\.", re.I)
+# One match per mock construction: "mock.patch(" counts once, not as "mock" plus "patch(".
+MOCK = re.compile(r"(?:\bmock\.)?\bpatch(?:\.object|\.dict|\.multiple)?\s*\(|(?:\bmock\.)?\b(?:Magic|Async|NonCallable)?Mock\s*\(|\bcreate_autospec\s*\(|\b(?:jest|vi)\.(?:fn|mock|spyOn)\s*\(|(?<![.\w])spyOn\s*\(|\bsinon\.\w+\s*\(|\bgomock\.\w+\s*\(")
 CALLS = re.compile(r"assert_called\w*|assert_has_calls|\.call_count\b|\.called\b|toHaveBeenCalled\w*|toBeCalled\w*|calledOnce|calledWith|\.Times\(")
 SNAP = re.compile(r"toMatch(Inline)?Snapshot|\bsnapshot\b", re.I)
 PRIVATE = {
@@ -39,6 +40,17 @@ TAUT = [
     re.compile(r"expect\(\s*true\s*\)\.toBe\(\s*true\s*\)"),
 ]
 LITERAL = re.compile(r"(\"[^\"\n]*\"|'[^'\n]*'|`[^`\n]*`|\b\d+(\.\d+)?\b)")
+
+
+def iter_files(root):
+    """Yield (dirpath, filename) under root; a file root yields just itself."""
+    if os.path.isfile(root):
+        yield os.path.dirname(root), os.path.basename(root)
+        return
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS and not d.startswith(".")]
+        for fn in filenames:
+            yield dirpath, fn
 
 
 def lang(ext):
@@ -127,38 +139,36 @@ def main():
     hits = defaultdict(list)
     exact, shape = defaultdict(list), defaultdict(list)
     total = 0
-    for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS and not d.startswith(".")]
-        for fn in filenames:
-            ext = os.path.splitext(fn)[1]
-            rel = os.path.relpath(os.path.join(dirpath, fn), repo).replace(os.sep, "/")
-            l = lang(ext)
-            if not l or not TEST_PATH.search(rel):
-                continue
-            for name, line, body, skipped in tests_in(os.path.join(repo, rel), ext):
-                total += 1
-                ref = {"file": rel, "line": line, "test": name}
-                text = "\n".join(body)
-                if skipped:
-                    hits["skipped"].append(ref)
-                if body and not ASSERT[l].search(text):
-                    hits["no_assertion"].append(ref)
-                if any(p.search(b) for p in TAUT for b in body):
-                    hits["tautological"].append(ref)
-                mocks = len(MOCK.findall(text))
-                if mocks >= 3:
-                    hits["mock_heavy"].append({**ref, "count": mocks})
-                if CALLS.search(text):
-                    hits["call_count_assertion"].append(ref)
-                if PRIVATE[l].search(text):
-                    hits["private_access"].append(ref)
-                if SNAP.search(text):
-                    hits["snapshot"].append(ref)
-                h1, h2 = norm(body, False), norm(body, True)
-                if h1:
-                    exact[h1].append(ref)
-                if h2:
-                    shape[h2].append(ref)
+    for dirpath, fn in iter_files(root):
+        ext = os.path.splitext(fn)[1]
+        rel = os.path.relpath(os.path.join(dirpath, fn), repo).replace(os.sep, "/")
+        l = lang(ext)
+        if not l or not TEST_PATH.search(rel):
+            continue
+        for name, line, body, skipped in tests_in(os.path.join(repo, rel), ext):
+            total += 1
+            ref = {"file": rel, "line": line, "test": name}
+            text = "\n".join(body)
+            if skipped:
+                hits["skipped"].append(ref)
+            if body and not ASSERT[l].search(text):
+                hits["no_assertion"].append(ref)
+            if any(p.search(b) for p in TAUT for b in body):
+                hits["tautological"].append(ref)
+            mocks = len(MOCK.findall(text))
+            if mocks >= 3:
+                hits["mock_heavy"].append({**ref, "count": mocks})
+            if CALLS.search(text):
+                hits["call_count_assertion"].append(ref)
+            if PRIVATE[l].search(text):
+                hits["private_access"].append(ref)
+            if SNAP.search(text):
+                hits["snapshot"].append(ref)
+            h1, h2 = norm(body, False), norm(body, True)
+            if h1:
+                exact[h1].append(ref)
+            if h2:
+                shape[h2].append(ref)
 
     dup = [g for g in exact.values() if len(g) > 1]
     dup_keys = {(r["file"], r["line"]) for g in dup for r in g}

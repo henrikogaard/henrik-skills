@@ -41,15 +41,24 @@ def is_test(path):
     return bool(TEST_PATH.search(path))
 
 
-def walk(repo, scope):
-    root = os.path.join(repo, scope) if scope else repo
+def iter_files(root):
+    """Yield (dirpath, filename) under root; a file root yields just itself."""
+    if os.path.isfile(root):
+        yield os.path.dirname(root), os.path.basename(root)
+        return
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS and not d.startswith(".")]
         for fn in filenames:
-            ext = os.path.splitext(fn)[1]
-            if ext in CODE_EXT:
-                full = os.path.join(dirpath, fn)
-                yield os.path.relpath(full, repo).replace(os.sep, "/"), ext
+            yield dirpath, fn
+
+
+def walk(repo, scope):
+    root = os.path.join(repo, scope) if scope else repo
+    for dirpath, fn in iter_files(root):
+        ext = os.path.splitext(fn)[1]
+        if ext in CODE_EXT:
+            full = os.path.join(dirpath, fn)
+            yield os.path.relpath(full, repo).replace(os.sep, "/"), ext
 
 
 def count_lines(path):
