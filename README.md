@@ -1,6 +1,6 @@
 # henrik-skills
 
-Four agent skills in the open Agent Skills layout (`SKILL.md` with frontmatter). They work in Claude Code and any harness that reads `~/.agents/skills`.
+Five agent skills in the open Agent Skills layout (`SKILL.md` with frontmatter). They work in Claude Code and any harness that reads `~/.agents/skills`.
 
 | Skill | What it does | Reach for it when |
 |---|---|---|
@@ -8,6 +8,7 @@ Four agent skills in the open Agent Skills layout (`SKILL.md` with frontmatter).
 | `/architecture-review` | Reviews an existing or legacy codebase: hot spots from git history, modules to split, pass-throughs to delete, duplicated or drifting logic, and excess tests to merge or remove. Reports first; a picked candidate becomes a design-doc refactor | "Assess this codebase", "this part is painful to change", "too many tests" |
 | `/delegate-subagents` | Runs external agent CLIs (codex, claude, grok, cursor, omp, pi, devin) in parallel and reconciles their output | "Ask codex and claude", "second opinion" |
 | `/summary-tables` | Formats status and close-out readouts as one evidence-backed table | "Is #88 done?", "what shipped?" |
+| `/managed-playwright` | Keeps a temporary shared Chromium browser tied to its task owner, with automatic cleanup and a maximum lifetime | "Reuse a browser between test scripts", "clean up a browser helper" |
 
 ## The design doc flow
 
@@ -82,6 +83,7 @@ Claude Code can turn a skill off in `~/.claude/settings.json` under `skillOverri
 
 ```bash
 python3 scripts/check_skills.py
+node --test managed-playwright/tests/lifecycle.test.mjs
 ```
 
 Checks frontmatter, SKILL.md length, that every `references/` and `scripts/` path a skill names exists, that every slash-named skill in a Markdown file is in this repo, and that each `evals/evals.json` parses and its fixture files, project folders and setup scripts exist.

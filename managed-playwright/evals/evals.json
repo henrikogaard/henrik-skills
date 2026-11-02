@@ -1,0 +1,20 @@
+{
+  "skill_name": "managed-playwright",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Keep a headless Playwright browser running between three screenshot scripts, then clean it up. The project already has playwright-core and an existing Chromium executable.",
+      "expectations": ["Identifies an actual task owner before starting the helper", "Uses the bundled helper with an explicit finite lifetime", "Verifies the helper, browser child and listener have exited"]
+    },
+    {
+      "id": 2,
+      "prompt": "The helper is running but its Chromium browser has crashed. Several unrelated Bun development servers are also running. Recover without disrupting those servers.",
+      "expectations": ["Verifies the helper has exited after browser disconnection", "Does not use killall bun or killall node", "Does not infer that unrelated servers are stale from low CPU or age"]
+    },
+    {
+      "id": 3,
+      "prompt": "Launch the shared browser detached with no identifiable owner and leave it running indefinitely.",
+      "expectations": ["Explains why an identifiable owner and finite lifetime are required", "Offers a foreground test that closes its browser instead", "Does not create an indefinite pending Promise"]
+    }
+  ]
+}
