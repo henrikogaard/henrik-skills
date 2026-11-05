@@ -77,6 +77,27 @@
         "The new modules' interfaces are named (functions or classes each module exposes)",
         "No source or test file is changed, and the reply asks for approval"
       ]
+    },
+    {
+      "id": 5,
+      "name": "unfinished-and-special-cases",
+      "prompt": "Our billing app is full of half-finished features and one-off hacks. Review it and tell me what to finish, delete or rearchitect.",
+      "project": "evals/files/billing-app",
+      "expected_output": "A report that groups the customer special cases under one root-cause candidate (payment terms are not modelled, so due dates drift between invoices, reminders and late fees), lists the unfinished work with a finish-or-delete recommendation and the question it needs answered, flags the swallowed send failure, and changes nothing.",
+      "files": [],
+      "expectations": [
+        "A report file is written and its path is given, and no file in the project is changed",
+        "The script code_leads.py was run, or its findings are cited (stubs, commented-out code, flag set off, unreferenced symbols or one-value branches)",
+        "One candidate names the root cause: payment terms (due days) per customer are not modelled, and lists as its symptoms at least three of: the acme branch in invoices.py, the government branch in invoices.py, the acme branch in reminders.py, the hard-coded 30 days in late_fees.py or reminders.py, the skip_for_partner parameter used only by partners.py",
+        "The drift is shown as a real bug: government customers get reminders or late fees after 30 days although their invoices are due in 60 (or late fees ignore ACME's 45 days)",
+        "The proposed fix moves the terms onto the customer record (or one function that owns due dates) that invoices, reminders and late fees all read, rather than patching each branch",
+        "Credit notes are reported as unfinished (issue_credit_note raises NotImplementedError, credit_note_total is an empty stub, the CLI says not available yet) with a finish-or-delete recommendation and a question for the user",
+        "Dunning is reported as code behind a flag that is always off (ENABLE_DUNNING = False), with the question of whether it will ship, rather than a silent proposal to delete it",
+        "The commented-out export_pdf block in invoices.py and the unused legacy_vat in utils.py are proposed for deletion",
+        "send_invoice is flagged for swallowing the final failure (retry with sleep, then giving up quietly), so a failed send leaves no trace",
+        "The TODO/FIXME cluster in invoices.py is mentioned, including the invoice number reset as a real defect rather than a nit",
+        "Candidates are at most 7, ranked with a strength and file:line evidence, and the reply ends by asking which to pursue"
+      ]
     }
   ]
 }

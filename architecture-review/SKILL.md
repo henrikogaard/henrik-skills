@@ -1,6 +1,6 @@
 ---
 name: architecture-review
-description: Review the architecture of an existing or legacy codebase and propose ranked, evidence-backed changes — modules to split, pass-through layers to delete, seams to move, duplicated or dead code to remove, and test suites to slim down (duplicate, tautological, over-mocked or implementation-coupled tests). Reports first and changes nothing; a candidate the user picks becomes a design-doc refactor. Use when the user asks to assess, review or untangle a codebase or module, wants refactoring or splitting advice, says some code is painful to change, or says there are too many or bad tests.
+description: Review the architecture of an existing or legacy codebase and propose ranked, evidence-backed changes — modules to split, pass-through layers to delete, seams to move, duplicated or dead code to remove, unfinished features to finish or delete, one-off special cases traced to the missing design behind them, and test suites to slim down (duplicate, tautological, over-mocked or implementation-coupled tests). Reports first and changes nothing; the candidates the user picks become a design-doc refactor. Use when the user asks to assess, review, untangle or rearchitect a codebase or module, wants refactoring or splitting advice, says some code is painful to change, is full of hacks or half-finished work, or says there are too many or bad tests.
 ---
 
 # Architecture review
@@ -22,17 +22,20 @@ Find where the structure makes change expensive, prove it with evidence, and ran
 2. **Gather facts with the scripts** (they run in seconds and work for any language):
    - `python3 <this-skill>/scripts/repo_facts.py <repo> [--scope <path>]`: hot spots (commits × size), largest files, files that change together, and the test inventory (test count and test-to-source ratio per folder).
    - `python3 <this-skill>/scripts/test_smells.py <repo> [--scope <path>]`: leads on duplicate, assertion-free, tautological, mock-heavy, call-count, private-access and skipped tests.
+   - `python3 <this-skill>/scripts/code_leads.py <repo> [--scope <path>]`: leads on unfinished work (TODO clusters, stubs, commented-out code, flags that are always off), unreferenced code, and special cases (branches on one literal value, swallowed exceptions, sleeps and retries).
    Script output is a lead list, not a verdict. Confirm every lead by reading the code.
 3. **Read the project's own rules first**: `AGENTS.md`, `README`, and any design docs (`docs/design/`). Decisions recorded there (`D-n`) stand unless the friction they cause is real and shown; then flag the conflict instead of ignoring the decision.
 4. **Review the code in scope** against `references/smells.md`. A finding needs evidence: `file:line`, numbers (lines, callers, commits, co-changes), and one sentence on what it costs today ("a tax change touches 4 files").
-5. **Review the tests in scope** against `references/tests.md`. Give each test file a verdict per test or group: keep, merge, move to a seam, delete, plus the behaviors that have no test at all. Never propose deleting the only test of a behavior.
-6. **Rank the candidates.** At most 7, deepest first. Each gets a strength (`Strong`, `Worth exploring`, `Speculative`), an effort (S, M, L), a risk, and the payoff in plain terms (fewer files per change, fewer and stronger tests, a seam you can test at). A candidate without evidence is `Speculative` at best.
-7. **Write the report** using `references/report-template.md`. Save it to the OS temp directory (`$TMPDIR`, falling back to /tmp) as `architecture-review-<repo>-<date>.md`, unless the user asked to keep it in the repo; then use `docs/architecture/review-<date>.md`. Give the path.
-8. **Reply short, then stop.** The reply holds the report's path, the top three candidates (one line each) and one closing question: which candidate to pursue. Do not paste the report into the reply. Always end with that question, even if the user may be away; it is how the review hands over.
+   Then **group the findings under root causes** (`references/smells.md`, "Group symptoms under a root cause"): the one change that makes several findings unnecessary is the candidate, and the findings are its symptoms. Never propose patching special cases one by one.
+5. **List the unfinished work** in scope: each stub, always-off flag or half-wired feature gets a recommendation (finish or delete) and, when intent is unclear, a `Q-n` for the user. Whether a feature ships is their call, not a clean-up.
+6. **Review the tests in scope** against `references/tests.md`. Give each test file a verdict per test or group: keep, merge, move to a seam, delete, plus the behaviors that have no test at all. Never propose deleting the only test of a behavior.
+7. **Rank the candidates.** At most 7, deepest first. Each gets a strength (`Strong`, `Worth exploring`, `Speculative`), an effort (S, M, L), a risk, and the payoff in plain terms (fewer files per change, fewer and stronger tests, a seam you can test at). A candidate without evidence is `Speculative` at best.
+8. **Write the report** using `references/report-template.md`. Save it to the OS temp directory (`$TMPDIR`, falling back to /tmp) as `architecture-review-<repo>-<date>.md`, unless the user asked to keep it in the repo; then use `docs/architecture/review-<date>.md`. Give the path.
+9. **Reply short, then stop.** The reply holds the report's path, the top three candidates (one line each) and one closing question: which candidates to pursue (one, or several together), plus any open `Q-n` on unfinished work. Do not paste the report into the reply. Always end with that question, even if the user may be away; it is how the review hands over.
 
-## When the user picks a candidate
+## When the user picks candidates
 
-Hand it to `/design-doc` as the source for a refactor (usually *Small*; *Full* if it moves contracts or data between modules). Its build plan must:
+Hand the pick to `/design-doc` as the source for a refactor (usually *Small*; *Full* if it moves contracts or data between modules). When the user picks several candidates that share a root cause or touch the same modules, make them **one** *Full* doc with a slice per candidate, not one doc each. Its build plan must:
 
 - start with **characterization tests** wherever the code to change has no test at a seam (see `references/legacy.md`);
 - change in small, reversible slices that keep the build green, never a rewrite;
@@ -42,6 +45,7 @@ Hand it to `/design-doc` as the source for a refactor (usually *Small*; *Full* i
 
 - **No changes during the review.** Read, run the scripts, run the existing tests if useful; edit nothing.
 - **Fewer, deeper findings** beat a long list. Seven strong candidates are worth more than thirty nits.
+- **Root causes over symptoms.** One change that removes five special cases beats five fixes.
 - **Prefer removing to adding.** Delete pass-throughs, merge duplicates, inline speculative abstractions before proposing new layers.
 - **Incremental over rewrite.** Every candidate must be doable in steps that each leave the code working.
 - **Fewer, stronger tests.** The goal for a test suite is tests at seams that fail on real regressions, not a higher test count.
@@ -49,8 +53,9 @@ Hand it to `/design-doc` as the source for a refactor (usually *Small*; *Full* i
 ## Done when
 
 - [ ] The scope is stated, and the scripts' facts are cited where they apply.
-- [ ] Every candidate has evidence (`file:line` and numbers), a strength, an effort, a risk and a payoff.
+- [ ] Every candidate has evidence (`file:line` and numbers), a strength, an effort, a risk and a payoff; a candidate built from special cases lists them as its symptoms.
+- [ ] Every unfinished item in scope has a finish-or-delete recommendation, with a `Q-n` where intent is unclear.
 - [ ] Every test file in scope has verdicts, and behaviors without tests are listed.
 - [ ] No deletion is proposed for a test that is the only cover for its behavior.
 - [ ] The report file exists, its path is given, and no source or test file was changed.
-- [ ] The reply gives the report path and the top three, does not repeat the report, and ends by asking which candidate to pursue.
+- [ ] The reply gives the report path and the top three, does not repeat the report, and ends by asking which candidates to pursue.
