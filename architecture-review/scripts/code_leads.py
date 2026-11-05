@@ -189,7 +189,12 @@ def main():
     repo = os.path.abspath(a.repo)
     if not os.path.isdir(repo):
         sys.exit(f"not a directory: {repo}")
-    scope = a.scope.strip("/")
+    scope = ""
+    if a.scope:
+        rel_scope = os.path.relpath(os.path.join(repo, a.scope), repo).replace(os.sep, "/")
+        if rel_scope.startswith(".."):
+            sys.exit(f"--scope is outside the repo: {a.scope}")
+        scope = "" if rel_scope == "." else rel_scope
 
     leads = {"markers": defaultdict(list), "stubs": [], "commented_out": [], "swallowed": [],
              "sleeps": [], "one_value": [], "flags": [], "defs": []}
