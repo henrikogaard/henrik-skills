@@ -21,12 +21,18 @@ Facts: <commits analysed and period, files, source and test lines, from repo_fac
 ### C1: <short title naming the change, e.g. "Split orders.py by reason to change">
 Strength: Strong · Effort: M · Risk: <what could break>
 Evidence: <file:line ranges, counts, co-change pairs, deletion-test result>
+Symptoms: <the special cases or findings this one change removes, each with file:line; leave out if only one>
 Problem: <one sentence: what it costs today>
 Change: <one or two sentences: what moves, merges or goes away, in incremental steps>
 Payoff: <fewer files per change, a testable seam, fewer and stronger tests>
 Tests affected: <kept, merged, deleted, added>
 
 ### C2: …
+
+## Unfinished work
+| Item | Evidence | Recommend | Question |
+|---|---|---|---|
+| <feature, e.g. gift cards> | <file:line of the stub or flag, what calls it, stated intent> | Finish / Delete | Q-n: <the product question that decides it> |
 
 ## Test suite
 | Test or group | Smell | Verdict | Covered after by |

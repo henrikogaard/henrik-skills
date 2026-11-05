@@ -5,7 +5,7 @@ Four agent skills in the open Agent Skills layout (`SKILL.md` with frontmatter).
 | Skill | What it does | Reach for it when |
 |---|---|---|
 | `/design-doc` | The start of all new engineering work: requirements, scope, conceptual and logical design in one Markdown doc, an approval stop, then detailed design written slice by slice while building | "Let's build…", "new feature", "what are we building?" |
-| `/architecture-review` | Reviews an existing or legacy codebase: hot spots from git history, modules to split, pass-throughs to delete, duplicated or drifting logic, and excess tests to merge or remove. Reports first; a picked candidate becomes a design-doc refactor | "Assess this codebase", "this part is painful to change", "too many tests" |
+| `/architecture-review` | Reviews an existing or legacy codebase: hot spots from git history, modules to split, pass-throughs to delete, duplicated or drifting logic, unfinished features to finish or delete, special cases traced to their root cause, and excess tests to merge or remove. Reports first; picked candidates become a design-doc refactor | "Assess this codebase", "this part is painful to change", "full of hacks", "too many tests" |
 | `/delegate-subagents` | Runs external agent CLIs (codex, claude, grok, cursor, omp, pi, devin) in parallel and reconciles their output | "Ask codex and claude", "second opinion" |
 | `/summary-tables` | Formats status and close-out readouts as one evidence-backed table | "Is #88 done?", "what shipped?" |
 
@@ -41,11 +41,13 @@ For code that already exists. `/architecture-review` changes nothing on its own:
 facts (scripts) → review code and tests → ranked candidates → report → you pick one → /design-doc refactor
 ```
 
-- **Two scripts** gather the facts in seconds, for any language: `repo_facts.py` (hot spots from git history, largest files, files that change together, tests per folder) and `test_smells.py` (duplicate, same-shape, assertion-free, tautological, mock-heavy, call-count, private-access and skipped tests). Their output is a lead list; the agent confirms each lead in the code.
+- **Three scripts** gather the facts in seconds: `repo_facts.py` (hot spots from git history, largest files, files that change together, tests per folder), `code_leads.py` (TODO clusters, stubs, commented-out code, always-off flags, unreferenced code, branches on one literal value, swallowed exceptions, sleeps and retries) and `test_smells.py` (duplicate, same-shape, assertion-free, tautological, mock-heavy, call-count, private-access and skipped tests). Their output is a lead list; the agent confirms each lead in the code.
+- **Candidates are root causes, not symptoms.** Special cases (one-value branches, caller-only parameters, swallowed exceptions, retries) are grouped under the one change that makes them unnecessary.
+- **Unfinished work gets a decision**: finish or delete, with a question for you when the intent is unclear.
 - **Every candidate carries evidence**: `file:line`, commit and co-change counts, and what it costs today. It is ranked `Strong`, `Worth exploring` or `Speculative`.
 - **Tests aim for fewer, stronger tests at seams.** No test is deleted unless a kept test still covers its behavior, checked with coverage or a mutation spot-check.
 - **The report goes to the temp directory** unless you ask to keep it in `docs/architecture/`.
-- **A picked candidate becomes a design doc** whose plan starts with characterization tests and moves code in small slices that keep the build green.
+- **A picked candidate becomes a design doc** (several related picks become one doc, a slice each) whose plan starts with characterization tests and moves code in small slices that keep the build green.
 
 ## How each skill is built
 
