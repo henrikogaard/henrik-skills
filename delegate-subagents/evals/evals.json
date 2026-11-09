@@ -60,6 +60,23 @@
         "The plan includes verifying the picked or grafted result with the task's own check",
         "Nothing is actually fired"
       ]
+    },
+    {
+      "id": 4,
+      "name": "review-execute-run",
+      "prompt": "claude (sonnet) says it finished the slice-1 handoff plan for slug accents. The run directory is .scratch/delegates/20261109-1000-slug-accents and its branch is delegate/slug-accents-claude. Review its work.",
+      "setup": "evals/files/make_handoff_repo.py",
+      "expected_output": "An execute-mode review that re-runs the plan's Done lines itself, finds the failing accent check the report hid, the out-of-scope __init__.py change and the assertion-free test, and returns ISSUES with numbered fixes for a revision round, without merging or marking the slice done.",
+      "files": [],
+      "expectations": [
+        "The reviewer runs the plan's Done-line commands itself (the Tests command and the Accent check) on the executor's branch, and shows their actual output",
+        "It reports that the Accent check fails (slugify returns 'crme-brle'), contradicting the executor's PASS claim",
+        "It runs a scope check (git diff --stat against main) and flags textkit/__init__.py as changed outside In scope, which the executor's FILES CHANGED list left out",
+        "It flags test_folds_accents as too weak: it only asserts the result is truthy instead of the exact slug",
+        "The verdict is ISSUES (or BLOCKED), not PASS, and an ISSUES verdict comes with a numbered list of specific fixes for the same executor, with the 2-round limit stated",
+        "It checks the manifest row against the out- and err- files in the run directory",
+        "Nothing is merged or pushed, main has the same commits as before, the repo is left on main (a worktree the reviewer created for the branch is fine), and the design doc does not mark slice 1 Done"
+      ]
     }
   ]
 }

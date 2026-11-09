@@ -32,7 +32,7 @@ Find where the structure makes change expensive, prove it with evidence, and ran
 
 ## When the user picks a candidate
 
-Hand it to `/design-doc` as the source for a refactor (usually *Small*; *Full* if it moves contracts or data between modules). Its build plan must:
+Hand it to `/design-doc` as the source for a refactor (usually *Small*; *Full* if it moves contracts or data between modules). If the user picks several, write one doc per candidate and give the order and dependencies between them. If another or cheaper agent will build it, ask `/design-doc` for handoff plans. Its build plan must:
 
 - start with **characterization tests** wherever the code to change has no test at a seam (see `references/legacy.md`);
 - change in small, reversible slices that keep the build green, never a rewrite;

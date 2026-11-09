@@ -38,6 +38,9 @@ Missing tests:
 
 Summary: <tests now> → <tests proposed>, <what stays covered>
 
+## Considered and dropped
+- <lead from the scripts or the reading>: <one line on why it is not a candidate, e.g. by design per D-2, or too small to matter>
+
 ## Conflicts with recorded decisions
 <only if a candidate contradicts a D-n in a design doc: which, and why the friction justifies reopening it>
 
