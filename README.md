@@ -62,6 +62,18 @@ The three skills chain into one loop: the strong model reviews and plans, a chea
 3. **Build and review.** "Run slice 1 of `docs/design/<slug>.md` on claude with sonnet." The executor works on `delegate/<slug>-s<n>-<agent>` in its own worktree. The reviewer re-runs every Done line, checks scope, reads the diff and the tests, and returns `PASS`, `ISSUES` (up to two fix rounds) or `BLOCKED`. Merging stays with you.
 4. **Next session.** Open the design doc again: handoff plans are drift-checked and refreshed before anything else.
 
+What each step hands to the next:
+
+| From | Deliverable | Where it lives | Next step reads it as |
+|---|---|---|---|
+| `/architecture-review` | Report with ranked candidates `C1`…`C7` | `$TMPDIR/architecture-review-<repo>-<date>.md`, or `docs/architecture/` if you ask to keep it | A source in the design doc; the candidate's evidence is copied in, since the temp file may vanish |
+| `/design-doc` | Approved design doc | `docs/design/<slug>.md` | The index: build-plan status per slice, links to plans |
+| `/design-doc` | One handoff plan per slice | `docs/design/<slug>/slice-<n>.md`, committed before running | The executor's whole brief, pasted in full |
+| `/delegate-subagents` execute | The executor's branch and report | `delegate/<slug>-s<n>-<agent>`, run files in `.scratch/delegates/<run>/` | Your review; on `PASS` the design doc is updated on that branch |
+| You | The merge | your base branch | The next slice's dependency shows `Done` |
+
+Say "keep the review in the repo" in step 1 if the plan work will happen in a later session.
+
 The review covers structure and tests. For security, performance or bug hunting, run a dedicated review first and feed its findings to `/design-doc` the same way.
 
 ## How each skill is built
