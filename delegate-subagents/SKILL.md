@@ -15,7 +15,7 @@ Ask in one question round (use the host's question tool if there is one), skippi
 2. **Which model per agent**, or the default. Mixing model families is the point: a Claude answer and a GPT answer that disagree is signal.
 3. **Mode.** *Counsel*: every agent answers the same brief. *Division*: each agent owns a different slice. *Arena*: each agent builds a competing version of the same artifact. *Execute*: one agent per handoff plan (`docs/design/<slug>/slice-<n>.md`) builds it; you review. For execute, default to a cheaper model than yours unless the user names one: cheap building is the point.
 4. **What "done" means**: the review criteria, or the deliverable.
-5. **Permissions.** *Analysis-only* (default): delegates read the repo and only print. *Edits allowed* (always, for execute): each delegate works on its own branch, `delegate/<slug>-<agent>`, in its own git worktree outside the user's checkout, which you create. Also agree a rough time or cost ceiling.
+5. **Permissions.** *Analysis-only* (default): delegates read the repo and only print. *Edits allowed* (always, for execute): each delegate works on its own branch, `delegate/<slug>-<agent>` (execute: `delegate/<slug>-s<n>-<agent>`, with the slice number, so two slices on one agent never share a branch), in its own git worktree outside the user's checkout, which you create. Also agree a rough time or cost ceiling.
 
 ## 2. Check the commands
 

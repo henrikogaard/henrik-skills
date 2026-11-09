@@ -4,7 +4,7 @@
 Usage: make_handoff_repo.py <dest>   (dest must not exist)
 
 main holds a tiny slug library, an approved design doc and a handoff plan for
-slice 1. The branch delegate/slug-accents-claude holds the executor's commit,
+slice 1. The branch delegate/slug-accents-s1-claude holds the executor's commit,
 which has three planted defects: the accent check fails, textkit/__init__.py
 (out of scope) is changed, and the new test asserts only that a value exists.
 The run directory's report claims PASS anyway.
@@ -211,7 +211,7 @@ def main():
     git(dest, "add", "-A")
     git(dest, "commit", "-q", "-m", "Design: slug accents, slice 1 handoff plan")
 
-    git(dest, "checkout", "-q", "-b", "delegate/slug-accents-claude")
+    git(dest, "checkout", "-q", "-b", "delegate/slug-accents-s1-claude")
     write(dest, "textkit/slug.py", BAD_SLUG)
     write(dest, "tests/test_slug.py", BAD_TEST)
     write(dest, "textkit/__init__.py", BAD_INIT)
@@ -226,7 +226,7 @@ def main():
     write(dest, f"{run}/MANIFEST.md",
           "| Agent | Model | Mode | Brief | Branch | Start | Status |\n"
           "|---|---|---|---|---|---|---|\n"
-          "| claude | sonnet | execute | brief-claude.md | delegate/slug-accents-claude "
+          "| claude | sonnet | execute | brief-claude.md | delegate/slug-accents-s1-claude "
           "| 2026-11-09 10:00 | finished |\n")
     print(dest)
 

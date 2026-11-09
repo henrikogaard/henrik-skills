@@ -64,7 +64,7 @@
     {
       "id": 4,
       "name": "review-execute-run",
-      "prompt": "claude (sonnet) says it finished the slice-1 handoff plan for slug accents. The run directory is .scratch/delegates/20261109-1000-slug-accents and its branch is delegate/slug-accents-claude. Review its work.",
+      "prompt": "claude (sonnet) says it finished the slice-1 handoff plan for slug accents. The run directory is .scratch/delegates/20261109-1000-slug-accents and its branch is delegate/slug-accents-s1-claude. Review its work.",
       "setup": "evals/files/make_handoff_repo.py",
       "expected_output": "An execute-mode review that re-runs the plan's Done lines itself, finds the failing accent check the report hid, the out-of-scope __init__.py change and the assertion-free test, and returns ISSUES with numbered fixes for a revision round, without merging or marking the slice done.",
       "files": [],

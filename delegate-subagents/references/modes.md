@@ -35,7 +35,7 @@ One executor builds one handoff plan (`docs/design/<slug>/slice-<n>.md`, written
 
 1. The repo is a git repo, the design doc and the plan are committed on the base the branch will start from, and every slice the plan depends on shows `Done` in the build plan. Otherwise stop and name what is missing; if only the commit is missing, ask the user to commit them (you never commit to their branch).
 2. Run the plan's drift check yourself. If in-scope files changed since `Planned at`, refresh the plan first (`/design-doc`, "Refresh plans on resume").
-3. Create the branch `delegate/<slug>-<agent>` in its own worktree, from the commit the user will merge into, and run the agent with the worktree as its working directory. A fresh worktree has no installed dependencies or build output; the executor installs them, and that is not a deviation.
+3. Create the branch `delegate/<slug>-s<n>-<agent>` (slice number included, so parallel slices on the same agent get separate branches) in its own worktree, from the commit the user will merge into, and run the agent with the worktree as its working directory. A fresh worktree has no installed dependencies or build output; the executor installs them, and that is not a deviation.
 4. The executor can be an agent CLI from `registry.md` with its edits-allowed flag, or the host's own subagent tool with worktree isolation. Default to a cheaper model than yours.
 
 Independent plans may run in parallel, one worktree each. A plan whose dependency is still running waits.

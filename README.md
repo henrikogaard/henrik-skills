@@ -59,7 +59,7 @@ The three skills chain into one loop: the strong model reviews and plans, a chea
 
 1. **Review.** "Assess this codebase." You get a ranked report and pick candidates.
 2. **Plan.** "Plan C1 and C3 so a cheaper model can build them." One small design doc per candidate, with a handoff plan per slice. Approve it.
-3. **Build and review.** "Run slice 1 of `docs/design/<slug>.md` on claude with sonnet." The executor works on `delegate/<slug>-<agent>` in its own worktree. The reviewer re-runs every Done line, checks scope, reads the diff and the tests, and returns `PASS`, `ISSUES` (up to two fix rounds) or `BLOCKED`. Merging stays with you.
+3. **Build and review.** "Run slice 1 of `docs/design/<slug>.md` on claude with sonnet." The executor works on `delegate/<slug>-s<n>-<agent>` in its own worktree. The reviewer re-runs every Done line, checks scope, reads the diff and the tests, and returns `PASS`, `ISSUES` (up to two fix rounds) or `BLOCKED`. Merging stays with you.
 4. **Next session.** Open the design doc again: handoff plans are drift-checked and refreshed before anything else.
 
 The review covers structure and tests. For security, performance or bug hunting, run a dedicated review first and feed its findings to `/design-doc` the same way.
