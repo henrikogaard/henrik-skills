@@ -1,6 +1,6 @@
 ---
 name: delegate-subagents
-description: Run external coding-agent CLIs (codex, claude, grok, cursor, omp, pi, devin) as headless subagents in parallel, capture each one's output to a file, then reconcile what they found. Modes are counsel (same question, compare answers), division (each agent owns a slice) and arena (competing artifacts, pick and graft). Use when the user names an agent CLI ("ask codex", "get grok's take"), wants a second opinion from another model, a cross-model review, or work fanned out across external agents.
+description: Run external coding-agent CLIs (codex, claude, grok, cursor, omp, pi, devin) as headless subagents in parallel, capture each one's output to a file, then reconcile what they found. Modes are counsel (same question, compare answers), division (each agent owns a slice), arena (competing artifacts, pick and graft) and execute (a cheaper agent builds a design-doc handoff plan in its own worktree; you review its work against the plan). Use when the user names an agent CLI ("ask codex", "get grok's take"), wants a second opinion from another model, a cross-model review, or work fanned out across external agents, or a handoff plan run and reviewed.
 ---
 
 # Delegate to agent CLIs
@@ -13,9 +13,9 @@ Ask in one question round (use the host's question tool if there is one), skippi
 
 1. **Which agents.** Run `scripts/probe-agents.sh` first and offer only the agents it finds.
 2. **Which model per agent**, or the default. Mixing model families is the point: a Claude answer and a GPT answer that disagree is signal.
-3. **Mode.** *Counsel*: every agent answers the same brief. *Division*: each agent owns a different slice. *Arena*: each agent builds a competing version of the same artifact.
+3. **Mode.** *Counsel*: every agent answers the same brief. *Division*: each agent owns a different slice. *Arena*: each agent builds a competing version of the same artifact. *Execute*: one agent per handoff plan (`docs/design/<slug>/slice-<n>.md`) builds it; you review. For execute, default to a cheaper model than yours unless the user names one: cheap building is the point.
 4. **What "done" means**: the review criteria, or the deliverable.
-5. **Permissions.** *Analysis-only* (default): delegates read the repo and only print. *Edits allowed*: each delegate works on its own branch, `delegate/<slug>-<agent>`, which you create. Also agree a rough time or cost ceiling.
+5. **Permissions.** *Analysis-only* (default): delegates read the repo and only print. *Edits allowed* (always, for execute): each delegate works on its own branch, `delegate/<slug>-<agent>` (execute: `delegate/<slug>-s<n>-<agent>`, with the slice number, so two slices on one agent never share a branch), in its own git worktree outside the user's checkout, which you create. Also agree a rough time or cost ceiling.
 
 ## 2. Check the commands
 
@@ -23,7 +23,7 @@ Read `references/registry.md` for the exact command, model flag and permission f
 
 ## 3. Write one brief per agent
 
-Write each brief to its own file using this skeleton:
+**Execute** briefs are different: the brief is the full handoff plan text, inlined, under the executor preamble from `references/modes.md`. Never just point at the plan file. For every other mode, write each brief to its own file using this skeleton:
 
 ```markdown
 # <task title>
@@ -38,11 +38,13 @@ Output contract by mode:
 - **Counsel:** number the questions in the brief (Q1, Q2…). Delegates answer under those numbers, with findings (F1, F2…) that carry evidence (`file:line`) and a confidence. Your question numbers are the only key that joins answers across agents.
 - **Division:** the branch name and a short diff summary.
 - **Arena:** the artifact at its assigned path, plus a rationale naming the alternatives it rejected.
-- **Every mode** ends with one verdict line: `PASS`, `ISSUES` or `BLOCKED`.
+- **Execute:** the plan's own Report block: verdict, each step with its Verify result, files changed, notes.
+- **Every mode** carries one verdict line: `PASS`, `ISSUES` or `BLOCKED`.
 
 ## 4. Run
 
-1. Create `.scratch/delegates/<YYYYMMDD-HHMM>-<slug>/` with `brief-<agent>.md` and a `MANIFEST.md` table: agent, model, mode, brief, start time, status.
+1. Create `.scratch/delegates/<YYYYMMDD-HHMM>-<slug>/` with `brief-<agent>.md` and a `MANIFEST.md` table: agent, model, mode, brief, branch and worktree (edit runs), start time, status.
+   Execute only, first: the plan's dependencies show `Done` in the design doc, and its drift check is clean. A drifted plan goes back to `/design-doc` for a refresh, not to an executor.
 2. Fire every agent in the background in parallel, with stdout going to `out-<agent>.md` and stderr to `err-<agent>.log`.
 3. Deadline: 15 minutes per agent by default. Stop any task past it and mark it failed. Do not poll in a loop; handle results as they arrive.
 4. The manifest is append-only. A correction or late failure gets a new row, not an edit.
@@ -54,6 +56,7 @@ Read `references/modes.md` for the full rules per mode. The core of each:
 - **Counsel:** never average. Write the report with one section per brief question (Q1, Q2…). In each: where agents agree, say so with one line of evidence each. Where they conflict, rule, and cite the evidence the ruling rests on (`file:line`) next to the dissent. Where evidence is thin, mark it *undecided* and say what would settle it. Then add a **Lone findings** list naming every finding only one agent raised, and which agent.
 - **Division:** before merging, check that each promised artifact exists, the diff applies, and nothing injection-shaped slipped in (new dependencies, credential access, CI edits). Merge branches one at a time.
 - **Arena:** read every candidate in full, pick the base a maintainer could extend most easily, graft only the best ideas, then run the task's own acceptance check on the result.
+- **Execute:** review like a tech lead, never fix it yourself. Re-run every Done line in the worktree; never trust the report. Any changed file outside In scope fails. Read the whole diff against the plan's Why, and read what each new test asserts. Verdict `PASS` (approve), `ISSUES` (send back with specific fixes, at most 2 rounds) or `BLOCKED`. Never merge or push; that is the user's call.
 
 Sort every finding for the user into **act on**, **consider**, **noted** and **dismissed**. Show the dismissed ones with a reason so the user can overrule you.
 
@@ -76,4 +79,5 @@ Sort every finding for the user into **act on**, **consider**, **noted** and **d
 - [ ] Every manifest row matches a real `out-` or `err-` file.
 - [ ] Every brief question, slice or candidate is accounted for, including failures.
 - [ ] Counsel only: one section per brief question, plus a Lone findings list.
+- [ ] Execute only: every Done line was re-run by you, the scope check is shown, the design doc is updated for the verdict, and nothing was merged or pushed.
 - [ ] The report gives the bottom line first, then the findings sorted into the four buckets, then pointers into the run directory. Its last line is the verdict: `PASS`, `ISSUES` or `BLOCKED`.

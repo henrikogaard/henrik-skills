@@ -74,6 +74,7 @@ Context: … Options: … Choice: … Consequences: …
 <!-- requirement ID | capability | component | mechanism (NFRs) | slice | status -->
 
 ## 7. Build plan
+<!-- Status: Planned | Handed off (link the plan file) | Building | Done | Blocked (one-line reason) -->
 | Slice | What it delivers | Requirement IDs | Status |
 |---|---|---|---|
 | 1 | <thinnest end-to-end path through the riskiest contract> | FR-1, NFR-3 | Planned |

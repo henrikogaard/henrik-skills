@@ -6,7 +6,7 @@ Four agent skills in the open Agent Skills layout (`SKILL.md` with frontmatter).
 |---|---|---|
 | `/design-doc` | The start of all new engineering work: requirements, scope, conceptual and logical design in one Markdown doc, an approval stop, then detailed design written slice by slice while building | "Let's build…", "new feature", "what are we building?" |
 | `/architecture-review` | Reviews an existing or legacy codebase: hot spots from git history, modules to split, pass-throughs to delete, duplicated or drifting logic, and excess tests to merge or remove. Reports first; a picked candidate becomes a design-doc refactor | "Assess this codebase", "this part is painful to change", "too many tests" |
-| `/delegate-subagents` | Runs external agent CLIs (codex, claude, grok, cursor, omp, pi, devin) in parallel and reconciles their output | "Ask codex and claude", "second opinion" |
+| `/delegate-subagents` | Runs external agent CLIs (codex, claude, grok, cursor, omp, pi, devin) in parallel and reconciles their output. *Execute* mode runs a handoff plan on a cheaper agent in its own worktree and reviews the result | "Ask codex and claude", "second opinion", "run slice 1 on sonnet" |
 | `/summary-tables` | Formats status and close-out readouts as one evidence-backed table | "Is #88 done?", "what shipped?" |
 
 ## The design doc flow
@@ -23,6 +23,7 @@ Phase 2 (build): for each slice: detailed design → implement → verify → up
 - **Detailed design is written per slice**, just before that slice is built, so it describes real code. The doc's Verification table maps each acceptance criterion to its test and result.
 - **Size decides the depth**: trivial fixes get no doc, small work a short doc under ~60 lines, and new systems the full doc.
 - **New scope on an existing doc** updates that doc, sets it back to `Draft` and asks for approval again.
+- **Handoff plans** are for slices another agent will build: one file per slice in `docs/design/<slug>/`, with the commit it was planned at, a drift check, current-code excerpts, verified commands, In and Out scope, a Verify command per step and STOP conditions.
 
 Typical prompts:
 
@@ -32,6 +33,7 @@ Typical prompts:
 | "Approved, go ahead with slice 1" | Phase 2: detailed design for slice 1, code, tests, doc updated |
 | "Can we also add a waitlist?" | Updates the existing doc, back to `Draft`, asks again |
 | "Fix the typo in the README" | Trivial: no doc, just the fix |
+| "Write it up so a cheaper model can build it" | Detailed design for every slice, one handoff plan per slice, slices marked `Handed off` |
 
 ## The architecture review flow
 
@@ -46,6 +48,33 @@ facts (scripts) → review code and tests → ranked candidates → report → y
 - **Tests aim for fewer, stronger tests at seams.** No test is deleted unless a kept test still covers its behavior, checked with coverage or a mutation spot-check.
 - **The report goes to the temp directory** unless you ask to keep it in `docs/architecture/`.
 - **A picked candidate becomes a design doc** whose plan starts with characterization tests and moves code in small slices that keep the build green.
+
+## Review, plan, then let a cheaper model build
+
+The three skills chain into one loop: the strong model reviews and plans, a cheaper one builds, and the strong one checks the work.
+
+```
+/architecture-review  →  you pick candidates  →  /design-doc with handoff plans  →  /delegate-subagents execute  →  you merge
+```
+
+1. **Review.** "Assess this codebase." You get a ranked report and pick candidates.
+2. **Plan.** "Plan C1 and C3 so a cheaper model can build them." One small design doc per candidate, with a handoff plan per slice. Approve it.
+3. **Build and review.** "Run slice 1 of `docs/design/<slug>.md` on claude with sonnet." The executor works on `delegate/<slug>-s<n>-<agent>` in its own worktree. The reviewer re-runs every Done line, checks scope, reads the diff and the tests, and returns `PASS`, `ISSUES` (up to two fix rounds) or `BLOCKED`. Merging stays with you.
+4. **Next session.** Open the design doc again: handoff plans are drift-checked and refreshed before anything else.
+
+What each step hands to the next:
+
+| From | Deliverable | Where it lives | Next step reads it as |
+|---|---|---|---|
+| `/architecture-review` | Report with ranked candidates `C1`…`C7` | `$TMPDIR/architecture-review-<repo>-<date>.md`, or `docs/architecture/` if you ask to keep it | A source in the design doc; the candidate's evidence is copied in, since the temp file may vanish |
+| `/design-doc` | Approved design doc | `docs/design/<slug>.md` | The index: build-plan status per slice, links to plans |
+| `/design-doc` | One handoff plan per slice | `docs/design/<slug>/slice-<n>.md`, committed before running | The executor's whole brief, pasted in full |
+| `/delegate-subagents` execute | The executor's branch and report | `delegate/<slug>-s<n>-<agent>`, run files in `.scratch/delegates/<run>/` | Your review; on `PASS` the design doc is updated on that branch |
+| You | The merge | your base branch | The next slice's dependency shows `Done` |
+
+Say "keep the review in the repo" in step 1 if the plan work will happen in a later session.
+
+The review covers structure and tests. For security, performance or bug hunting, run a dedicated review first and feed its findings to `/design-doc` the same way.
 
 ## How each skill is built
 

@@ -1,6 +1,6 @@
 ---
 name: design-doc
-description: The starting point for new engineering work. Phase 1 captures requirements and scope and writes a conceptual and logical design into one Markdown design doc, then stops for approval. Phase 2 builds the work slice by slice, writing each slice's detailed design just before implementing it and keeping the doc current with decisions, deltas and test results. Use whenever someone starts a new feature, system, service, integration or significant change ("let's build", "new feature", "what are we building", requirements, PRD, spec, architecture, design), and whenever implementing work that already has a design doc. Not for trivial fixes; to assess an existing codebase, use architecture-review.
+description: The starting point for new engineering work. Phase 1 captures requirements and scope and writes a conceptual and logical design into one Markdown design doc, then stops for approval. Phase 2 builds the work slice by slice, writing each slice's detailed design just before implementing it and keeping the doc current with decisions, deltas and test results. When another or cheaper agent will build the slices, it writes one self-contained handoff plan per slice, with verify commands and STOP conditions. Use whenever someone starts a new feature, system, service, integration or significant change ("let's build", "new feature", "what are we building", requirements, PRD, spec, architecture, design), and whenever implementing work that already has a design doc. Not for trivial fixes; to assess an existing codebase, use architecture-review.
 ---
 
 # Design doc
@@ -18,7 +18,7 @@ The doc's first lines carry a status everyone can read at a glance:
 
 ## Start: find or create the doc
 
-1. **Look for an existing doc** in the repo's design docs folder (default `docs/design/`). If one covers this work, read it, read its status, and continue from there. Never start a second doc for the same work.
+1. **Look for an existing doc** in the repo's design docs folder (default `docs/design/`). If one covers this work, read it, read its status, and continue from there. Never start a second doc for the same work. If it has handoff plans, refresh them first (see "Refresh plans on resume" in `references/handoff.md`).
 2. **Size the work and say which size in your first line:**
    - *Trivial* (a typo, a config value, a one-line fix with an obvious test): say "Trivial: no design doc", then just do it.
    - *Small* (a change inside a settled architecture, a few requirements): a one-page doc, **under ~60 lines**. Only these sections: Requirements (FRs with acceptance criteria as a short list), Scope (In; add Out or Later only if something is in them), Design (a few lines on what changes and where in the code), Build plan (one or two slices), Open questions. Add Decisions, Verification or Codebase deltas only once they have real content. Never write a heading or row that says "none".
@@ -63,7 +63,11 @@ If building shows the logical design is wrong (a contract, a data owner or the s
 
 When every slice is done and every acceptance criterion has a **passing** result, set `Status: Done (<date>)`. A failed, skipped or blocked test keeps the work open.
 
-If the work goes to implementers who were not in the conversation, write every slice's detailed design before Phase 2 starts, and say so.
+## Hand slices to another agent
+
+When someone who was not in this conversation will build (a cheaper model, an agent CLI, another session, a person): write every handed-off slice's detailed design now, then one handoff plan per slice, `docs/design/<slug>/slice-<n>.md`, following `references/handoff.md`. Set each slice to `Handed off` in the build plan with a link and its dependencies. If the user asked for handoff up front and the code exists, do this with Phase 1 so one approval covers both; new code waits for approval. Then stop and say how to run the plans: give a file to any agent, or use `/delegate-subagents` *execute* mode, which reviews the work.
+
+Status stays `Approved` until the first slice runs, then `Building (slice n of m)`. On an approved result the reviewer updates this doc on the executor's branch (Verification, build plan, deltas, change log, `Done (<date>)` after the last slice). A blocked slice gets its plan rewritten, or the design changed with a new `D-n`.
 
 ## Decisions log
 
@@ -104,3 +108,7 @@ Each Phase 2 slice:
 - [ ] Its detailed design was written before its code.
 - [ ] Every acceptance criterion of the slice has a test with a passing result; a failing one keeps the slice open and is recorded.
 - [ ] The status line, plan, deltas, decisions and change log are updated in the same commit as the code.
+
+Each handoff plan:
+- [ ] It passes the quality check in `references/handoff.md`: it stands alone, records its planned-at commit, and every step and Done line is a command you ran.
+- [ ] The build plan shows the slice as `Handed off` with a link, and no slice code was written.

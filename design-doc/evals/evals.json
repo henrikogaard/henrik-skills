@@ -97,6 +97,29 @@
         "The doc's status returns to Draft (or the reply explicitly asks for approval of the changed scope) and no waitlist code is written",
         "A change-log line records the scope change"
       ]
+    },
+    {
+      "id": 6,
+      "name": "handoff-plans-for-cheaper-agent",
+      "prompt": "The class booking design (docs/design/class-booking.md) is approved. I don't want you to build it: write it up so a cheaper model can build slices 1 and 2 on its own.",
+      "project": "evals/files/booking-app",
+      "expected_output": "Detailed design for slices 1 and 2 in the doc, one self-contained handoff plan file per slice with a planned-at line, drift check, current-state excerpts, verified commands, In/Out scope, verified steps, machine-checkable done lines and STOP conditions; build plan marks both slices Handed off; no booking code written.",
+      "files": [
+        "evals/files/booking-app/docs/design/class-booking.md",
+        "evals/files/booking-app/booking/db.py"
+      ],
+      "expectations": [
+        "Two plan files exist, one per slice, under docs/design/class-booking/ (or an equivalent folder next to the doc), and the doc gains detailed design for slices 1 and 2",
+        "Each plan has a Planned at line with a commit SHA, or says the project is not a git repo and why the drift check is skipped",
+        "Each plan quotes the current code it changes with file:line from booking/db.py (for example the class_slot schema or connect with isolation_level=None)",
+        "The slice 1 plan quotes decision D-1 (conditional update inside one transaction) and has a STOP condition tied to it or to NFR-3",
+        "Each plan's commands table includes `python3 -m unittest discover -s tests` with its expected result, and the reply or plan shows the command was actually run",
+        "Each plan has In scope and Out of scope lists; slice 2's Out of scope excludes fee or Stripe code (slice 3)",
+        "Every step ends with a Verify command and expected result, and every Done line is a command, not a judgment",
+        "Each plan ends with a report format with a PASS, ISSUES or BLOCKED verdict",
+        "The build plan marks slices 1 and 2 Handed off with links to the plan files, and slice 2 notes its dependency on slice 1",
+        "No booking code (book, cancel or fee functions) is written, and the reply says how to run the plans, naming /delegate-subagents execute mode or handing a plan file to an agent"
+      ]
     }
   ]
 }
