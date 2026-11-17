@@ -1,6 +1,6 @@
 # henrik-skills
 
-Four agent skills in the open Agent Skills layout (`SKILL.md` with frontmatter). They work in Claude Code and any harness that reads `~/.agents/skills`.
+Five agent skills in the open Agent Skills layout (`SKILL.md` with frontmatter). They work in Claude Code and any harness that reads `~/.agents/skills`.
 
 | Skill | What it does | Reach for it when |
 |---|---|---|
@@ -8,6 +8,7 @@ Four agent skills in the open Agent Skills layout (`SKILL.md` with frontmatter).
 | `/architecture-review` | Reviews an existing or legacy codebase: hot spots from git history, modules to split, pass-throughs to delete, duplicated or drifting logic, and excess tests to merge or remove. Reports first; a picked candidate becomes a design-doc refactor | "Assess this codebase", "this part is painful to change", "too many tests" |
 | `/delegate-subagents` | Runs external agent CLIs (codex, claude, grok, cursor, omp, pi, devin) in parallel and reconciles their output. *Execute* mode runs a handoff plan on a cheaper agent in its own worktree and reviews the result | "Ask codex and claude", "second opinion", "run slice 1 on sonnet" |
 | `/summary-tables` | Formats status and close-out readouts as one evidence-backed table | "Is #88 done?", "what shipped?" |
+| `/issue-brief` | Writes or rewrites a tracker issue (Linear, GitHub, Jira) as a brief another agent can start cold: facts verified in the code at a commit, decisions settled first, stop conditions, and numbered acceptance criteria that each say how they are verified | "Write an issue for this", "make this issue ready for an agent", "polish these issues" |
 
 ## The design doc flow
 

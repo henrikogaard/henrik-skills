@@ -1,0 +1,65 @@
+{
+  "skill_name": "issue-brief",
+  "evals": [
+    {
+      "id": 1,
+      "name": "rewrite-vague-issue",
+      "prompt": "Rewrite evals/files/vague-issue.md as an issue another agent can implement without asking me anything. The code is in evals/files/notes-app/.",
+      "project": "evals/files/notes-app",
+      "expected_output": "A feature-sized brief whose facts cite notes/export.py and notes/store.py, which corrects both false review claims, keeps sync as an open decision instead of designing it, and has numbered acceptance criteria with how each is verified.",
+      "files": [
+        "evals/files/vague-issue.md",
+        "evals/files/notes-app/notes/export.py",
+        "evals/files/notes-app/notes/store.py",
+        "evals/files/notes-app/tests/test_export.py"
+      ],
+      "expectations": [
+        "The reply states the size of the work",
+        "The brief records a commit the facts were read at, or says the folder is not a git repository",
+        "A 'What exists today' section names export_csv and EXPORT_COLUMNS in notes/export.py and NoteStore in notes/store.py",
+        "The brief says the claim that export_csv already writes tags is false: EXPORT_COLUMNS is id, title, body",
+        "The brief says the claim that notes are saved to SQLite is false: NoteStore keeps notes in memory",
+        "Sync between devices is listed as an open decision or a separate outcome with a recommendation, and no step designs or implements sync",
+        "There is a 'Stop and ask' section with at least two conditions",
+        "Acceptance criteria are numbered and each has a 'How it is verified' entry naming a test or command",
+        "At least one test to write first is about tags in the export and points at an acceptance criterion",
+        "The reply asks the owner to decide the open question before the sync part is written as steps"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "small-fix-stays-small",
+      "prompt": "Write an issue for another agent: in evals/files/notes-app the export header should say \"note_id\" instead of \"id\".",
+      "project": "evals/files/notes-app",
+      "expected_output": "A short small-fix brief naming EXPORT_COLUMNS in notes/export.py, the existing test that asserts the header, and one or two acceptance criteria with how they are verified.",
+      "files": [
+        "evals/files/notes-app/notes/export.py",
+        "evals/files/notes-app/tests/test_export.py"
+      ],
+      "expectations": [
+        "The reply states the work is a small fix",
+        "The brief names EXPORT_COLUMNS in notes/export.py",
+        "The brief notes that tests/test_export.py asserts the old header and must change",
+        "Acceptance criteria are numbered and each says how it is verified",
+        "The brief has no Decisions, Sequence or Slice sections",
+        "The brief is under 40 lines"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "decision-before-steps",
+      "prompt": "Make an issue so a cheaper model can add a size limit to note bodies in evals/files/notes-app. Not sure what the limit should be.",
+      "project": "evals/files/notes-app",
+      "expected_output": "The reply finds the existing MAX_NOTE_CHARS limit of 2000 in notes/store.py, reports it, and asks whether to change it before writing implementation steps.",
+      "files": [
+        "evals/files/notes-app/notes/store.py"
+      ],
+      "expectations": [
+        "The reply says a limit already exists: MAX_NOTE_CHARS = 2000 in notes/store.py, enforced in save_note",
+        "The reply asks the owner what the limit should be, or whether the existing one is enough, with a recommendation",
+        "No implementation steps depend on a limit value the owner has not chosen",
+        "Any acceptance criteria written say how they are verified"
+      ]
+    }
+  ]
+}
