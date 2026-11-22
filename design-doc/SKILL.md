@@ -55,7 +55,7 @@ When the user asks for something new and a doc for this work already exists, cha
 Only start when the status is `Approved` or `Building`. For each slice, in plan order:
 
 1. **Detailed design for this slice only** (`references/detailed.md`), under "Detailed design → Slice n": interfaces with one literal example, data changes and migrations, failure modes, and the tests for this slice's acceptance criteria. This is where products and versions get pinned, each pivotal one as a `D-n`. Write it just before building, so it matches the code that exists.
-2. **Implement** through the repo's normal workflow (branch, tests, PR). Link the doc from the PR.
+2. **Implement** as commits on the work's one branch, with tests. Every slice goes on the same branch and the same PR; a slice is not a PR of its own. Open the PR once, when every slice is done or the user asks for review, and link the doc from it. Split into several PRs only when the user asks or one PR would exceed about 1,500 changed lines outside tests and generated files.
 3. **Verify.** Run the tests. Fill the Verification table: acceptance criterion → test → result → change (the PR, or "this change"; a commit cannot contain its own hash). A criterion without a passing test is not done: record the failure, keep the slice open, and say so.
 4. **Update the doc** in the same commit as the code: set `Status: Building (slice n of m)`, mark the slice done in the plan, record any code that diverged from the design under "Codebase deltas", add new `D-n` entries, and add a change-log line.
 
